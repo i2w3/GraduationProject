@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
+import time
 from d2l import torch as d2l
 from datetime import datetime
 
@@ -23,7 +24,7 @@ torch.cuda.manual_seed(SEED)
 # 参数设置
 LEARNING_RATE = 0.001
 BATCH_SIZE = 100
-N_EPOCHS = 5
+N_EPOCHS = 15
 
 
 def get_accuracy(net, data_iter, device=None):
@@ -47,7 +48,7 @@ def get_accuracy(net, data_iter, device=None):
     return metric[0] / metric[1]
 
 
-def plot_losses(train_losses, valid_losses):
+def plot_es(train, valid, Style):
     '''
     Function for plotting training and validation losses
     '''
@@ -55,17 +56,31 @@ def plot_losses(train_losses, valid_losses):
     # temporarily change the style of the plots to seaborn
     plt.style.use('seaborn')
 
-    train_losses = np.array(train_losses)
-    valid_losses = np.array(valid_losses)
+    train = np.array(train)
+    valid = np.array(valid)
 
     fig, ax = plt.subplots(figsize=(8, 4.5))
 
-    ax.plot(train_losses, color='blue', label='Training loss')
-    ax.plot(valid_losses, color='red', label='Validation loss')
-    ax.set(title="Loss over epochs",
+    if Style == "loss":
+        a1label = 'Training loss'
+        a2label = 'Validation loss'
+        title = 'Loss over epochs'
+        ylabel = 'Loss'
+    if Style == "acc":
+        a1label = 'Training Acc'
+        a2label = 'Validation Acc'
+        title = 'Acc over epochs'
+        ylabel = 'Acc'
+
+    ax.plot(train, color='blue', label=a1label)
+    ax.plot(valid, color='red', label=a2label)
+    ax.set(title=title,
            xlabel='Epoch',
-           ylabel='Loss')
+           ylabel=ylabel)
+    ax.set_xticks(list(range(0, N_EPOCHS)))
+    ax.set_xticklabels(list(range(1, N_EPOCHS + 1)))
     ax.legend()
+    fig.savefig("./png/" + Style + "_" + int(time.time) + '.png')
     fig.show()
 
     # change the plot style to default
@@ -127,12 +142,14 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
     """
 
     print(f'{datetime.now().time().replace(microsecond=0)} --- '
-          f'Start training loop')
+          f'Start training loop\t'
+          f'training on: {device}')
 
     # set objects for storing metrics
-    best_loss = 1e10
     train_losses = []
     valid_losses = []
+    train_acces = []
+    valid_acces = []
 
     # Train model
     for epoch in range(0, epochs):
@@ -156,19 +173,24 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
                   f'Valid loss: {valid_loss:.4f}\t'
                   f'Train accuracy: {100 * train_acc:.2f}\t'
                   f'Valid accuracy: {100 * valid_acc:.2f}')
+            train_acces.append(train_acc)
+            valid_acces.append(valid_acc)
 
-    plot_losses(train_losses, valid_losses)
+    plot_es(train_losses, valid_losses, "loss")
+    plot_es(train_acces, valid_acces, "acc")
 
-    return model, optimizer, (train_losses, valid_losses)
+    return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
 # define the data loaders
 train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 
-net = modern_Lenet(channel)
+net = Lenet(channel)
 
 model = net.to(DEVICE)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
-model, optimizer, (a, b) = training_loop(model, criterion, optimizer, train_loader, valid_loader, N_EPOCHS, DEVICE)
+model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces) = training_loop(model, criterion, optimizer,
+                                                                                           train_loader, valid_loader,
+                                                                                           N_EPOCHS, DEVICE)

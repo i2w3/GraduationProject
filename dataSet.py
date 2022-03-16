@@ -2,10 +2,13 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 
-def trans_Compose(resize=None, normalize=None):
+def trans_Compose(resize=None, normalize=None, Random=None):
     trans = [transforms.ToTensor()]  # 转换data的数据类型为Torch Tensor
     if resize:
         trans.insert(0, transforms.Resize(resize))  # 调整data的size
+    if Random:
+        trans.insert(0, transforms.RandomHorizontalFlip())  # 数据增广
+        trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
     if normalize:
         trans.append(transforms.Normalize(normalize, normalize))  # 需不需要标准化(0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
     return transforms.Compose(trans)

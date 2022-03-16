@@ -84,6 +84,6 @@ def Lenet_SE(channel):
 def SE_Lenet(channel):
     SE_Lenet = nn.Sequential()
     SE_Lenet.add_module("SE Block", SELayer(channel))
-    SE_Lenet.add_module("LeNet", modern_Lenet(channel))
+    SE_Lenet.add_module("LeNet", Lenet(channel))
     return SE_Lenet
 
