@@ -1,5 +1,4 @@
-import sys
-
+import d2l
 from IPython import display
 from matplotlib import pyplot as plt
 
