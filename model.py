@@ -13,6 +13,18 @@ def Lenet(channel):
                          nn.Linear(84, 10)
                          )
 
+def erykml_Lenet(channel):
+    return nn.Sequential(nn.Conv2d(channel, 6, 5, 1), nn.Tanh(),
+                         # in_channels=3,out_channels=6,kernel_size=5,stride=1, padding=0
+                         nn.AvgPool2d(kernel_size=2, stride=2),
+                         nn.Conv2d(6, 16, 5, 1), nn.Tanh(),
+                         nn.AvgPool2d(kernel_size=2, stride=2),
+                         nn.Conv2d(16, 120, 5, 1), nn.Tanh(),
+                         nn.Flatten(),
+                         nn.Linear(120, 84), nn.Tanh(),
+                         nn.Linear(84, 10)
+                         )
+
 
 def modern_Lenet(channel):
     return nn.Sequential(nn.Conv2d(channel, 6, 5, 1), nn.ReLU(),

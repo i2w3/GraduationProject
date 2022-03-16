@@ -24,6 +24,7 @@ def evaluate_accuracy_gpu(net, data_iter, device=None):  # @save
         if not device:
             device = next(iter(net.parameters())).device
     # 正确预测的数量，总预测的数量
+    # 训练损失总和，词元数量
     metric = d2l.Accumulator(2)
     with torch.no_grad():
         for X, y in data_iter:
@@ -39,7 +40,6 @@ def evaluate_accuracy_gpu(net, data_iter, device=None):  # @save
 
 # @save
 def train_ch6(net, train_iter, test_iter, num_epochs, lr, device, channel):
-
     def init_weights(m):
         if type(m) == nn.Linear or type(m) == nn.Conv2d:
             nn.init.xavier_uniform_(m.weight)
@@ -63,7 +63,7 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device, channel):
         # 训练损失之和，训练准确率之和，样本数
         metric = d2l.Accumulator(3)
         net.train()
-        for i, (X, y) in enumerate(train_iter):
+        for i, (X, y) in enumerate(train_iter):  # batch_idx, (data, target)
             timer.start()
             optimizer.zero_grad()
             X, y = X.to(device), y.to(device)
