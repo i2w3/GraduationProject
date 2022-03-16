@@ -2,6 +2,7 @@ import torch
 from d2l import torch as d2l
 from dataSet import *
 from model import *
+from Animator import Animator
 from ptflops import get_model_complexity_info
 from torchsummary import summary
 
@@ -38,7 +39,6 @@ def evaluate_accuracy_gpu(net, data_iter, device=None):  # @save
 
 # @save
 def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
-    """用GPU训练模型(在第六章定义)"""
 
     def init_weights(m):
         if type(m) == nn.Linear or type(m) == nn.Conv2d:
@@ -56,7 +56,7 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
 
     optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=5e-4)
     loss = nn.CrossEntropyLoss()
-    animator = d2l.Animator(xlabel='epoch', xlim=[1, num_epochs],
+    animator = Animator(xlabel='epoch', xlim=[1, num_epochs],
                             legend=['train loss', 'train acc', 'test acc'])
     timer, num_batches = d2l.Timer(), len(train_iter)
     for epoch in range(num_epochs):
