@@ -1,8 +1,9 @@
-import d2l
+from d2l import torch as d2l
 from IPython import display
 from matplotlib import pyplot as plt
 
-class Animator:
+
+class Animator_mod:
     """For plotting data in animation."""
     def __init__(self, xlabel=None, ylabel=None, legend=None, xlim=None,
                  ylim=None, xscale='linear', yscale='linear',

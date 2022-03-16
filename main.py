@@ -2,7 +2,7 @@ import torch
 from d2l import torch as d2l
 from dataSet import *
 from model import *
-from Animator import Animator
+from Animator import Animator_mod
 from ptflops import get_model_complexity_info
 from torchsummary import summary
 
@@ -11,8 +11,8 @@ batch_size = 100
 epoches = 50
 learning_rate = 1e-1
 
-# train_dataloader, test_dataloader, channel = load_MNIST(batch_size, resize=(32, 32))
-train_dataloader, test_dataloader, channel = load_CIFAR10(batch_size, normalize=(0.5, 0.5, 0.5))
+train_dataloader, test_dataloader, channel = load_MNIST(batch_size, resize=(32, 32))
+# train_dataloader, test_dataloader, channel = load_CIFAR10(batch_size, normalize=(0.5, 0.5, 0.5))
 
 LeNet5 = Lenet(channel)
 
@@ -38,7 +38,7 @@ def evaluate_accuracy_gpu(net, data_iter, device=None):  # @save
 
 
 # @save
-def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
+def train_ch6(net, train_iter, test_iter, num_epochs, lr, device, channel):
 
     def init_weights(m):
         if type(m) == nn.Linear or type(m) == nn.Conv2d:
@@ -47,7 +47,7 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
     net.apply(init_weights)
     print('training on', device)
     net.to(device)
-    summary(net, (3, 32, 32))
+    summary(net, (channel, 32, 32))
 
     if device == 'cuda':
         net = nn.DataParallel(net)
@@ -56,7 +56,7 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
 
     optimizer = torch.optim.SGD(net.parameters(), lr=lr, momentum=0.9, weight_decay=5e-4)
     loss = nn.CrossEntropyLoss()
-    animator = Animator(xlabel='epoch', xlim=[1, num_epochs],
+    animator = Animator_mod(xlabel='epoch', xlim=[1, num_epochs],
                             legend=['train loss', 'train acc', 'test acc'])
     timer, num_batches = d2l.Timer(), len(train_iter)
     for epoch in range(num_epochs):
@@ -87,5 +87,5 @@ def train_ch6(net, train_iter, test_iter, num_epochs, lr, device):
           f'on {str(device)}')
 
 
-train_ch6(LeNet5, train_dataloader, test_dataloader, epoches, learning_rate, d2l.try_gpu())
+train_ch6(LeNet5, train_dataloader, test_dataloader, epoches, learning_rate, d2l.try_gpu(), channel)
 # torch.save(LeNet5, 'model_name.pth')
