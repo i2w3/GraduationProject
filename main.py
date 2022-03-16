@@ -38,7 +38,6 @@ def evaluate_accuracy_gpu(net, data_iter, device=None):  # @save
     return metric[0] / metric[1]
 
 
-# @save
 def train_ch6(net, train_iter, test_iter, num_epochs, lr, device, channel):
     def init_weights(m):
         if type(m) == nn.Linear or type(m) == nn.Conv2d:

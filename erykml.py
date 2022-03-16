@@ -1,32 +1,34 @@
-from datetime import datetime
-from d2l import torch as d2l
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
+import numpy as np
+import matplotlib.pyplot as plt
 
-from dataSet import *
+from d2l import torch as d2l
+from datetime import datetime
+
 from model import *
+from dataSet import *
 
-# check device
+
+# 检查cuda和cudnn加速
 if torch.cuda.is_available():
     DEVICE = torch.device('cuda')
     torch.backends.cudnn.benchmark = True
 else:
     DEVICE = torch.device('cpu')
 
+# 增加PyTorch中模型的可复现性
+SEED = 0
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
 
-# parameters
-RANDOM_SEED = 42
+# 参数设置
 LEARNING_RATE = 0.001
-BATCH_SIZE = 32
+BATCH_SIZE = 100
 N_EPOCHS = 15
 
-IMG_SIZE = 32
-N_CLASSES = 10
 
-
-def get_accuracy(net, data_iter, device=None):  # @save
-    """使用GPU计算模型在数据集上的精度"""
+def get_accuracy(net, data_iter, device=None):
+    # 使用GPU计算模型在数据集上的精度
     if isinstance(net, nn.Module):
         net.eval()  # 设置为评估模式
         if not device:
@@ -125,6 +127,9 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
     Function defining the entire training loop
     """
 
+    print(f'{datetime.now().time().replace(microsecond=0)} --- '
+          f'Start training loop')
+
     # set objects for storing metrics
     best_loss = 1e10
     train_losses = []
@@ -162,8 +167,6 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
 train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 
 net = modern_Lenet(channel)
-
-torch.manual_seed(RANDOM_SEED)
 
 model = net.to(DEVICE)
 
