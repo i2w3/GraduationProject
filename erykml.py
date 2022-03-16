@@ -8,7 +8,6 @@ from datetime import datetime
 from model import *
 from dataSet import *
 
-
 # 检查cuda和cudnn加速
 if torch.cuda.is_available():
     DEVICE = torch.device('cuda')
@@ -24,7 +23,7 @@ torch.cuda.manual_seed(SEED)
 # 参数设置
 LEARNING_RATE = 0.001
 BATCH_SIZE = 100
-N_EPOCHS = 15
+N_EPOCHS = 5
 
 
 def get_accuracy(net, data_iter, device=None):
@@ -49,11 +48,11 @@ def get_accuracy(net, data_iter, device=None):
 
 
 def plot_losses(train_losses, valid_losses):
-    """
+    '''
     Function for plotting training and validation losses
-    """
+    '''
 
-    # temporarily change the style of the plots to seaborn 
+    # temporarily change the style of the plots to seaborn
     plt.style.use('seaborn')
 
     train_losses = np.array(train_losses)
@@ -172,4 +171,4 @@ model = net.to(DEVICE)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
-model, optimizer, _ = training_loop(model, criterion, optimizer, train_loader, valid_loader, N_EPOCHS, DEVICE)
+model, optimizer, (a, b) = training_loop(model, criterion, optimizer, train_loader, valid_loader, N_EPOCHS, DEVICE)
