@@ -15,13 +15,13 @@ class SELayer(nn.Module):
         )
 
     def forward(self, x):
-        b, c, _, _ = x.size()
+        bs, c, _, _ = x.size()
 
         # B*C*1*1转成B*C，再送入FC层
-        y = self.avg_pool(x).view(b, c)
+        y = self.avg_pool(x).view(bs, c)
 
         # 全连接层+池化
-        y = self.fc(y).view(b, c, 1, 1)
+        y = self.fc(y).view(bs, c, 1, 1)
 
         # 和原特征图相乘
         return x * y.expand_as(x)

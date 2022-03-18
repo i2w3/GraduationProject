@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-
+from torchsummary import summary
 import time
 from d2l import torch as d2l
 from datetime import datetime
@@ -12,21 +12,20 @@ from dataSet import *
 # 检查cuda和cudnn加速
 if torch.cuda.is_available():
     DEVICE = torch.device('cuda')
+    torch.backends.cudnn.benchmark = True
 else:
     DEVICE = torch.device('cpu')
 
 # 增加PyTorch中模型的可复现性
 SEED = 0
-torch.manual_seed(SEED)
-torch.cuda.manual_seed(SEED)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-np.random.seed(SEED)
+np.random.seed(0)
+torch.manual_seed(0)
+torch.cuda.manual_seed_all(0)
 
 # 参数设置
 LEARNING_RATE = 0.001
 BATCH_SIZE = 100
-N_EPOCHS = 15
+N_EPOCHS = 50
 
 
 def get_accuracy(net, data_iter, device=None):
@@ -187,13 +186,17 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
 
 
 # define the data loaders
-train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
+# train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 # train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32),normalize=(0.5, 0.5, 0.5))
-# train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
+train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
 
-net = Lenet(channel)
+# net = Lenet(channel, SE=False, BN=False)
+# net = Lenet(channel, SE=False, BN=True)
+net = Lenet(channel, SE=True, BN=True)
 
 model = net.to(DEVICE)
+
+summary(model, (channel, 32, 32))
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
