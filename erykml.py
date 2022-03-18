@@ -6,7 +6,7 @@ import time
 from d2l import torch as d2l
 from datetime import datetime
 
-from model.Lenet import *
+from model.LeNet import *
 from dataSet import *
 
 # 检查cuda和cudnn加速
@@ -192,7 +192,8 @@ train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), 
 
 # net = Lenet(channel, SE=False, BN=False)
 # net = Lenet(channel, SE=False, BN=True)
-net = Lenet(channel, SE=True, BN=True)
+# net = Lenet(channel, SE=True, BN=True)
+net = Lenet(channel, SE=True)
 
 model = net.to(DEVICE)
 

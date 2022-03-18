@@ -1,9 +1,10 @@
 import torch.nn as nn
 
 
-class SELayer(nn.Module):
+# Squeeze and Excitation Networks的核心SE Block
+class SEBlock(nn.Module):
     def __init__(self, channel, reduction=16):
-        super(SELayer, self).__init__()
+        super(SEBlock, self).__init__()
 
         # 全局平均池化，输入B*C*H*W -> 输出 B*C*1*1
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
