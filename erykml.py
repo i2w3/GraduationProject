@@ -6,13 +6,12 @@ import time
 from d2l import torch as d2l
 from datetime import datetime
 
-from model import *
+from model.Lenet import *
 from dataSet import *
 
 # 检查cuda和cudnn加速
 if torch.cuda.is_available():
     DEVICE = torch.device('cuda')
-    torch.backends.cudnn.benchmark = True
 else:
     DEVICE = torch.device('cpu')
 
@@ -20,6 +19,9 @@ else:
 SEED = 0
 torch.manual_seed(SEED)
 torch.cuda.manual_seed(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+np.random.seed(SEED)
 
 # 参数设置
 LEARNING_RATE = 0.001
@@ -48,7 +50,7 @@ def get_accuracy(net, data_iter, device=None):
     return metric[0] / metric[1]
 
 
-def plot_es(train, valid, Style):
+def plot_es(train, valid, Style, time_Tick):
     '''
     Function for plotting training and validation losses
     '''
@@ -80,7 +82,9 @@ def plot_es(train, valid, Style):
     ax.set_xticks(list(range(0, N_EPOCHS)))
     ax.set_xticklabels(list(range(1, N_EPOCHS + 1)))
     ax.legend()
-    fig.savefig("./png/" + Style + "_" + int(time.time) + '.png')
+    fig.savefig("./png/" + str(int(time_Tick)) + "_" + Style + '.png')
+    np.save("./png/" + str(int(time_Tick)) + "_" + Style + '.npy', train)
+    np.save("./png/" + str(int(time_Tick)) + "_" + Style + '.npy', valid)
     fig.show()
 
     # change the plot style to default
@@ -175,15 +179,17 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
                   f'Valid accuracy: {100 * valid_acc:.2f}')
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
-
-    plot_es(train_losses, valid_losses, "loss")
-    plot_es(train_acces, valid_acces, "acc")
+    time_Tick = time.time()
+    plot_es(train_losses, valid_losses, "loss", time_Tick)
+    plot_es(train_acces, valid_acces, "acc", time_Tick)
 
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
 # define the data loaders
 train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
+# train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32),normalize=(0.5, 0.5, 0.5))
+# train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
 
 net = Lenet(channel)
 

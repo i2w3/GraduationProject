@@ -15,11 +15,11 @@ def trans_Compose(resize=None, normalize=None, Random=None):
 
 
 # 加载数据集
-def load_MNIST(batch_size, resize=None, normalize=None):
+def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
     MNIST_train = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                  train=True,  # 作为训练集
                                  download=True,  # 是否下载该数据集
-                                 transform=trans_Compose(resize, normalize)
+                                 transform=trans_Compose(resize, normalize, Random)
                                  )
     MNIST_test = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                 train=False,  # 作为测试集
@@ -31,11 +31,11 @@ def load_MNIST(batch_size, resize=None, normalize=None):
             1)
 
 
-def load_CIFAR10(batch_size, resize=None, normalize=None):
+def load_CIFAR10(batch_size, resize=None, normalize=None, Random=None):
     CIFAR10_train = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                      train=True,  # 作为训练集
                                      download=True,  # 是否下载该数据集
-                                     transform=trans_Compose(resize, normalize)
+                                     transform=trans_Compose(resize, normalize, Random)
                                      )
     CIFAR10_test = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                     train=False,  # 作为测试集
