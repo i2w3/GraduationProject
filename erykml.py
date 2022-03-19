@@ -26,7 +26,7 @@ torch.backends.cudnn.deterministic = True
 # 参数设置
 LEARNING_RATE = 0.001
 BATCH_SIZE = 100
-N_EPOCHS = 15
+N_EPOCHS = 50
 
 
 def get_accuracy(net, data_iter, device=None):
@@ -138,21 +138,24 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
                   f'Valid accuracy: {100 * valid_acc:.2f}')
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
-    unix_timestamp = time.time()
-    plot_es(epochs, train_losses, valid_losses, "loss", unix_timestamp)
-    plot_es(epochs, train_acces, valid_acces, "acc", unix_timestamp)
-
+    unix_timestamp = str(int(time.time()))
+    print(f'{datetime.now().time().replace(microsecond=0)} --- '
+          f'当前时间戳为: {unix_timestamp}')
+    # plot_es(epochs, train_losses, valid_losses, "loss", unix_timestamp)
+    # plot_es(epochs, train_acces, valid_acces, "acc", unix_timestamp)
+    full_plot(epochs, train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
+    saveNpy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
 # define the data loaders
-train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
+# train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 # train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32),normalize=(0.5, 0.5, 0.5))
-# train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
+train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
 
 # net = Lenet(channel)
 # net = Lenet(channel, BN2=True)
-net = Lenet(channel, SE2=True, BN2=True, reduction=32)
+net = Lenet(channel, SE2=True, BN2=True, reduction=16)
 # net = Lenet(channel, SE=True)
 
 model = net.to(DEVICE)
@@ -161,6 +164,6 @@ summary(model, (channel, 32, 32))
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 criterion = nn.CrossEntropyLoss()
-model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces) = training_loop(model, criterion, optimizer,
-                                                                                           train_loader, valid_loader,
-                                                                                           N_EPOCHS, DEVICE)
+model, optimizer, (train_loss, valid_loss), (train_acc, valid_acc) = training_loop(model, criterion, optimizer,
+                                                                                   train_loader, valid_loader,
+                                                                                   N_EPOCHS, DEVICE)
