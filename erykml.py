@@ -1,31 +1,32 @@
 import torch
-import numpy as np
-import matplotlib.pyplot as plt
+
 from torchsummary import summary
 import time
 from d2l import torch as d2l
 from datetime import datetime
 
-from model.LeNet import *
+from vision import *
 from dataSet import *
+from model.LeNet import *
 
 # 检查cuda和cudnn加速
 if torch.cuda.is_available():
     DEVICE = torch.device('cuda')
-    torch.backends.cudnn.benchmark = True
 else:
     DEVICE = torch.device('cpu')
 
 # 增加PyTorch中模型的可复现性
 SEED = 0
-np.random.seed(0)
-torch.manual_seed(0)
-torch.cuda.manual_seed_all(0)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed(SEED)
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
 
 # 参数设置
 LEARNING_RATE = 0.001
 BATCH_SIZE = 100
-N_EPOCHS = 50
+N_EPOCHS = 15
 
 
 def get_accuracy(net, data_iter, device=None):
@@ -47,47 +48,6 @@ def get_accuracy(net, data_iter, device=None):
             y = y.to(device)
             metric.add(d2l.accuracy(net(X), y), y.numel())
     return metric[0] / metric[1]
-
-
-def plot_es(train, valid, Style, time_Tick):
-    '''
-    Function for plotting training and validation losses
-    '''
-
-    # temporarily change the style of the plots to seaborn
-    plt.style.use('seaborn')
-
-    train = np.array(train)
-    valid = np.array(valid)
-
-    fig, ax = plt.subplots(figsize=(8, 4.5))
-
-    if Style == "loss":
-        a1label = 'Training loss'
-        a2label = 'Validation loss'
-        title = 'Loss over epochs'
-        ylabel = 'Loss'
-    if Style == "acc":
-        a1label = 'Training Acc'
-        a2label = 'Validation Acc'
-        title = 'Acc over epochs'
-        ylabel = 'Acc'
-
-    ax.plot(train, color='blue', label=a1label)
-    ax.plot(valid, color='red', label=a2label)
-    ax.set(title=title,
-           xlabel='Epoch',
-           ylabel=ylabel)
-    ax.set_xticks(list(range(0, N_EPOCHS)))
-    ax.set_xticklabels(list(range(1, N_EPOCHS + 1)))
-    ax.legend()
-    fig.savefig("./png/" + str(int(time_Tick)) + "_" + Style + '.png')
-    np.save("./png/" + str(int(time_Tick)) + "_" + Style + '.npy', train)
-    np.save("./png/" + str(int(time_Tick)) + "_" + Style + '.npy', valid)
-    fig.show()
-
-    # change the plot style to default
-    plt.style.use('default')
 
 
 def train(train_loader, model, criterion, optimizer, device):
@@ -178,22 +138,22 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
                   f'Valid accuracy: {100 * valid_acc:.2f}')
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
-    time_Tick = time.time()
-    plot_es(train_losses, valid_losses, "loss", time_Tick)
-    plot_es(train_acces, valid_acces, "acc", time_Tick)
+    unix_timestamp = time.time()
+    plot_es(epochs, train_losses, valid_losses, "loss", unix_timestamp)
+    plot_es(epochs, train_acces, valid_acces, "acc", unix_timestamp)
 
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
 # define the data loaders
-# train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
+train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 # train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32),normalize=(0.5, 0.5, 0.5))
-train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
+# train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), Random=True)
 
-# net = Lenet(channel, SE=False, BN=False)
-# net = Lenet(channel, SE=False, BN=True)
-# net = Lenet(channel, SE=True, BN=True)
-net = Lenet(channel, SE=True)
+# net = Lenet(channel)
+# net = Lenet(channel, BN2=True)
+net = Lenet(channel, SE2=True, BN2=True, reduction=32)
+# net = Lenet(channel, SE=True)
 
 model = net.to(DEVICE)
 
