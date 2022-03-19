@@ -155,9 +155,10 @@ train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), 
 
 # net = Lenet(channel)
 # net = Lenet(channel, BN2=True)
-net = Lenet(channel, SE2=True, BN2=True, reduction=16)
+# net = Lenet(channel, SE2=True, BN2=True, reduction=16)
 # net = Lenet(channel, SE=True)
-
+# net = Lenet(channel, SE1=True, BN1=True, SE2=True, BN2=True)
+net = Lenet(channel, BN1=True, BN2=True)
 model = net.to(DEVICE)
 
 summary(model, (channel, 32, 32))

@@ -20,7 +20,7 @@ def Lenet(channel, SE2=None, BN2=None, SE1=None, BN1=None, reduction=16):
         net.add_module("Bn1", (nn.BatchNorm2d(6, momentum=0.9, eps=1e-5)))
     net.add_module("Activation1", nn.Tanh())
     if SE1:
-        net.add_module("SE Block1", SEBlock(16, reduction=reduction))
+        net.add_module("SE Block1", SEBlock(6, reduction=reduction))
         print(f"SE1 Reduction={reduction}")
 
 
