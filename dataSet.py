@@ -10,7 +10,7 @@ def trans_Compose(resize=None, normalize=None, Random=None):
         trans.insert(0, transforms.RandomHorizontalFlip())  # 数据增广
         trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
     if normalize:
-        trans.append(transforms.Normalize(normalize, normalize))  # 需不需要标准化(0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
+        trans.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))  # 需不需要标准化
     return transforms.Compose(trans)
 
 
