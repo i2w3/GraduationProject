@@ -195,8 +195,7 @@ def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_times
     l3 = ax2.plot(train_acc, color='blue', label="Train acc")
     l4 = ax2.plot(valid_acc, color='red', label="Valid acc")
 
-
-    lns = l1 + l3 + l4
+    lns = l1 + l2 + l3 + l4
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper left')
 

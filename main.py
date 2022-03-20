@@ -35,6 +35,7 @@ params = sum(p.numel() for p in list(net.parameters())) / 1e6
 print('#Params: %.1fM' % params)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+# optimizer = torch.optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=5e-4)
 criterion = nn.CrossEntropyLoss()
 model, optimizer, (train_loss, valid_loss), (train_acc, valid_acc) = training_loop(model, criterion, optimizer,
                                                                                    train_loader, valid_loader, N_EPOCHS,
