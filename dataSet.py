@@ -15,7 +15,7 @@ def trans_Compose(resize=None, normalize=None, Random=None):
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
         if normalize == "CIFAR10":
             trans.append(transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]))
-        print(f"Dataset enable Random")
+        print(f"Dataset enable Normalize")
     return transforms.Compose(trans)
 
 
@@ -28,12 +28,13 @@ def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
                                  download=True,  # 是否下载该数据集
                                  transform=trans_Compose(resize, normalize, Random)
                                  )
+    print(f"MNIST训练数据集处理完成")
     MNIST_test = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                 train=False,  # 作为测试集
                                 download=True,  # 是否下载该数据集
                                 transform=trans_Compose(resize, normalize)
                                 )
-    print(f"MNIST数据集处理完成")
+    print(f"MNIST测试数据集处理完成")
     return (DataLoader(MNIST_train, batch_size=batch_size, shuffle=True),
             DataLoader(MNIST_test, batch_size=batch_size, shuffle=False),
             1)
@@ -47,12 +48,13 @@ def load_CIFAR10(batch_size, resize=None, normalize=None, Random=None):
                                      download=True,  # 是否下载该数据集
                                      transform=trans_Compose(resize, normalize, Random)
                                      )
+    print(f"CIFAR10训练数据集处理完成")
     CIFAR10_test = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                     train=False,  # 作为测试集
                                     download=True,  # 是否下载该数据集
                                     transform=trans_Compose(resize, normalize)
                                     )
-    print(f"CIFAR10数据集处理完成")
+    print(f"CIFAR10测试数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),
             DataLoader(CIFAR10_test, batch_size=batch_size, shuffle=False),
             3)

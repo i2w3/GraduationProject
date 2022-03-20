@@ -41,11 +41,11 @@ class ResNet18(nn.Module):
     主模块
     '''
 
-    def __init__(self):
+    def __init__(self, channel):
         super(ResNet18, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, stride=3, padding=0),
+            nn.Conv2d(channel, 64, kernel_size=3, stride=3, padding=0),
             nn.BatchNorm2d(64)
         )
         # followed 4 blocks
