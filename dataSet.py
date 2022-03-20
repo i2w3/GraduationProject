@@ -9,11 +9,13 @@ def trans_Compose(resize=None, normalize=None, Random=None):
     if Random:
         trans.insert(0, transforms.RandomHorizontalFlip())  # 数据增广
         trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
+        print(f"Dataset enable Random")
     if normalize:
         if normalize == "MNIST":
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
         if normalize == "CIFAR10":
             trans.append(transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]))
+        print(f"Dataset enable Random")
     return transforms.Compose(trans)
 
 
@@ -31,6 +33,7 @@ def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
                                 download=True,  # 是否下载该数据集
                                 transform=trans_Compose(resize, normalize)
                                 )
+    print(f"MNIST数据集处理完成")
     return (DataLoader(MNIST_train, batch_size=batch_size, shuffle=True),
             DataLoader(MNIST_test, batch_size=batch_size, shuffle=False),
             1)
@@ -49,6 +52,7 @@ def load_CIFAR10(batch_size, resize=None, normalize=None, Random=None):
                                     download=True,  # 是否下载该数据集
                                     transform=trans_Compose(resize, normalize)
                                     )
+    print(f"CIFAR10数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),
             DataLoader(CIFAR10_test, batch_size=batch_size, shuffle=False),
             3)
