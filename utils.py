@@ -204,7 +204,7 @@ def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_times
     elif N_EPOCHS == 15:
         blink = 2
     else:
-        blink = 11
+        blink = 18
     ticks = list(range(0, N_EPOCHS, blink))
     ticks.append(N_EPOCHS - 1)
     tickl = [i + 1 for i in ticks]
