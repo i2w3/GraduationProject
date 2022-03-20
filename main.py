@@ -1,5 +1,6 @@
 from utils import *
-from model.LeNet import *
+from model.LeNet import Lenet
+from model.ResNet import se_resnet18
 from dataSet import load_MNIST, load_CIFAR10
 
 from torchsummary import summary
@@ -19,7 +20,8 @@ N_EPOCHS = 50
 # train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
 train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, resize=(32, 32), normalize=True, Random=True)
 
-net = Lenet(channel)
+net = se_resnet18()
+# net = Lenet(channel)
 # net = Lenet(channel, BN2=True)
 # net = Lenet(channel, SE2=True, BN2=True, reduction=16)
 # net = Lenet(channel, SE=True)
@@ -27,7 +29,8 @@ net = Lenet(channel)
 # net = Lenet(channel, BN1=True, BN2=True)
 model = net.to(DEVICE)
 
-summary(model, (channel, 32, 32))
+# summary(model, (channel, 32, 32))
+summary(model, (channel, 224, 224))
 params = sum(p.numel() for p in list(net.parameters())) / 1e6
 print('#Params: %.1fM' % params)
 

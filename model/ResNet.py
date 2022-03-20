@@ -1,72 +1,70 @@
 import torch.nn as nn
+from torchvision.models import ResNet
+from torchvision.models import resnet18 as ResNet18
+
 from model.SE_Block import SEBlock
 
-from torch import nn
-from torch.nn import functional as F
+
+# 调用torchvision来构建具有随机权重的resnet18模型
+def resnet18(pretrained=False, progress=True):
+    return ResNet18(pretrained=False, progress=True)
 
 
-class ResBlk(nn.Module):
-    """
-    resnet block子模块
-    """
+# 构建se_resnet18
+def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                     padding=dilation, groups=groups, bias=False, dilation=dilation)
 
-    def __init__(self, ch_in, ch_out, stride=1):
-        super(ResBlk, self).__init__()
 
-        self.conv1 = nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=stride, padding=1)
-        self.bn1 = nn.BatchNorm2d(ch_out)
-        self.conv2 = nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1)
-        self.bn2 = nn.BatchNorm2d(ch_out)
+class SEBasicBlock(nn.Module):
+    expansion = 1
 
-        self.extra = nn.Sequential()
-        # 如果输入和输出的通道不一致，或其步长不为 1，需要将二者转成一致
-        if ch_out != ch_in:
-            # [b, ch_in, h, w] => [b, ch_out, h, w]
-            self.extra = nn.Sequential(
-                nn.Conv2d(ch_in, ch_out, kernel_size=1, stride=stride),
-                nn.BatchNorm2d(ch_out)
-            )
+    def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
+                 base_width=64, dilation=1, norm_layer=None, r=16):
+        super(SEBasicBlock, self).__init__()
+        if norm_layer is None:
+            norm_layer = nn.BatchNorm2d
+        if groups != 1 or base_width != 64:
+            raise ValueError('BasicBlock only supports groups=1 and base_width=64')
+        if dilation > 1:
+            raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
+        # Both self.conv1 and self.downsample layers downsample the input when stride != 1
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = norm_layer(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = norm_layer(planes)
+        self.downsample = downsample
+        self.stride = stride
+        # add SE block
+        self.se = SEBlock(planes, r)
 
     def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
+        identity = x
 
-        out = self.extra(x) + out
-        out = F.relu(out)
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+        # add SE operation
+        out = self.se(out)
+
+        if self.downsample is not None:
+            identity = self.downsample(x)
+
+        out += identity
+        out = self.relu(out)
+
         return out
 
 
-class ResNet18(nn.Module):
-    '''
-    主模块
-    '''
+def _resnet(arch, block, layers, pretrained, progress, **kwargs):
+    model = ResNet(block, layers, **kwargs)
+    return model
 
-    def __init__(self, channel):
-        super(ResNet18, self).__init__()
 
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(channel, 64, kernel_size=3, stride=3, padding=0),
-            nn.BatchNorm2d(64)
-        )
-        # followed 4 blocks
-        self.blk1 = ResBlk(64, 128, stride=2)  # [b, 64, h, w] => [b, 128, h ,w]
-        self.blk2 = ResBlk(128, 256, stride=2)  # [b, 128, h, w] => [b, 256, h, w]
-        self.blk3 = ResBlk(256, 512, stride=2)  # [b, 256, h, w] => [b, 512, h, w]
-        self.blk4 = ResBlk(512, 512, stride=2)  # [b, 512, h, w] => [b, 512, h, w]
-
-        self.outlayer = nn.Linear(512 * 1 * 1, 10)  # 全连接层，总共10个分类
-
-    def forward(self, x):
-        x = F.relu(self.conv1(x))
-
-        # [b, 64, h, w] => [b, 1024, h, w]
-        x = self.blk1(x)
-        x = self.blk2(x)
-        x = self.blk3(x)
-        x = self.blk4(x)
-
-        x = F.adaptive_avg_pool2d(x, [1, 1])  # [b, 512, h, w] => [b, 512, 1, 1]
-        x = x.view(x.size(0), -1)
-        x = self.outlayer(x)
-
-        return x
+def se_resnet18(pretrained=False, progress=True, **kwargs):
+    return _resnet('resnet18', SEBasicBlock, [2, 2, 2, 2], pretrained, progress,
+                   **kwargs)
