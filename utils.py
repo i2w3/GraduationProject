@@ -180,27 +180,23 @@ def evaluteTop5(model, loader):
 def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, savePath='./png/'):
     # 绘图
     train_loss = np.array(train_loss)
-    if valid_loss:
-        # 不一定绘制valid_loss
-        valid_loss = np.array(valid_loss)
+
+    valid_loss = np.array(valid_loss)
     train_acc = np.array(train_acc)
     valid_acc = np.array(valid_acc)
 
     fig, ax = plt.subplots(figsize=(9, 5), tight_layout=True)  # 创建一个包含一个axes的figure
 
     l1 = ax.plot(train_loss, '--', color='blue', label="Train loss")
-    if valid_loss:
-        l2 = ax.plot(valid_loss, '--', color='red', label="Valid loss")
+    l2 = ax.plot(valid_loss, '--', color='red', label="Valid loss")
 
     ax2 = ax.twinx()
 
     l3 = ax2.plot(train_acc, color='blue', label="Train acc")
     l4 = ax2.plot(valid_acc, color='red', label="Valid acc")
 
-    if valid_loss:
-        lns = l1 + l2 + l3 + l4
-    else:
-        lns = l1 + l3 + l4
+
+    lns = l1 + l3 + l4
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper left')
 
