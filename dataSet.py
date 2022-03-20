@@ -10,12 +10,14 @@ def trans_Compose(resize=None, normalize=None, Random=None):
         trans.insert(0, transforms.RandomHorizontalFlip())  # 数据增广
         trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
     if normalize:
-        trans.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))  # 需不需要标准化
+        trans.append(transforms.Normalize(normalize))  # 需不需要标准化
     return transforms.Compose(trans)
 
 
 # 加载数据集
 def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
+    if normalize:
+        normalize = ((0.1307,), (0.3081,))
     MNIST_train = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                  train=True,  # 作为训练集
                                  download=True,  # 是否下载该数据集
@@ -32,6 +34,8 @@ def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
 
 
 def load_CIFAR10(batch_size, resize=None, normalize=None, Random=None):
+    if normalize:
+        normalize = ((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     CIFAR10_train = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                      train=True,  # 作为训练集
                                      download=True,  # 是否下载该数据集

@@ -137,8 +137,8 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
     top5err = evaluteTop5(model, valid_loader)
     print(f'{datetime.now().time().replace(microsecond=0)} --- '
           f'当前时间戳为: {unix_timestamp}\t'
-          f'top1 err.：{top1err}\t'
-          f'top5 err.：{top5err}')
+          f'top1 err.: {top1err}\t'
+          f'top5 err.: {top5err}')
     full_plot(epochs, train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
     saveNpy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
