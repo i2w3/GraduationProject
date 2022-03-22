@@ -97,13 +97,14 @@ def validate(valid_loader, model, criterion, device):
 
 
 def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1, DLR=None,
+                  milestones=[135, 185],
                   reduction=10):
     # 模型的训练循环
 
     print(f'{real_Time()} --- '
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 165], gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
     # 保存数据
     train_acces = []
     valid_acces = []
@@ -127,7 +128,7 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
         new_lr = optimizer.state_dict()['param_groups'][0]['lr']
         if old_lr != new_lr:
             print(f'\t\t\t\t\t\t'
-                  f'Learning Rate由{old_lr}转为{new_lr}，下次epoch生效')
+                  f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
             old_lr = new_lr
 
         if epoch % print_every == (print_every - 1):
@@ -164,6 +165,7 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
           f'top5 acc: {top5err}')
     full_plot(train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
     saveNpy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
+    torch.save(model, "./png/" + str(unix_timestamp) + "/model.pt")
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
@@ -237,10 +239,16 @@ def full_plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
         blink = 7
     elif N_EPOCHS == 15:
         blink = 2
+    elif N_EPOCHS == 240:
+        blink = 34
     else:
         blink = 18
     ticks = list(range(0, N_EPOCHS, blink))
-    ticks.append(N_EPOCHS - 1)
+    if N_EPOCHS or N_EPOCHS == 15:
+        ticks.append(N_EPOCHS - 1)
+    else:
+        ticks[-1] = N_EPOCHS
+
     tickl = [i + 1 for i in ticks]
     ax.set_xticks(ticks)
     ax.set_xticklabels(tickl, rotation=10)
