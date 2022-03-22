@@ -3,18 +3,18 @@ from torchvision import datasets, transforms
 
 
 def trans_Compose(resize=None, normalize=None, Random=None):
-    trans = [transforms.ToTensor()]  # 转换data的数据类型为Torch Tensor
+    trans = [transforms.ToTensor()]
+    if Random:
+        trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
+        trans.insert(0, transforms.RandomHorizontalFlip())  # 依50%概率水平翻转
+        print(f"Dataset enable Random")
     if resize:
         trans.insert(0, transforms.Resize(resize))  # 调整data的size
-    if Random:
-        trans.insert(0, transforms.RandomHorizontalFlip())  # 数据增广
-        trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
-        print(f"Dataset enable Random")
     if normalize:
         if normalize == "MNIST":
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
         if normalize == "CIFAR10":
-            trans.append(transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]))
+            trans.append(transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)))
         print(f"Dataset enable Normalize")
     return transforms.Compose(trans)
 

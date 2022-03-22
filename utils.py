@@ -15,6 +15,10 @@ def check_Device():
     return torch.device('cpu')
 
 
+def real_Time():
+    return datetime.now().time().replace(microsecond=0)
+
+
 def seed_Setting(SEED):
     # 根据SEED设置随机种子，增加PyTorch中模型的可复现性
     if SEED:
@@ -92,22 +96,24 @@ def validate(valid_loader, model, criterion, device):
     return model, epoch_loss
 
 
-def training_loop(model, criterion, optimizer, train_loader, valid_loader, epochs, device, print_every=1):
+def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1, DLR=None,
+                  reduction=10):
     # 模型的训练循环
 
-    print(f'{datetime.now().time().replace(microsecond=0)} --- '
+    print(f'{real_Time()} --- '
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
-
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[100, 165], gamma=0.1)
     # 保存数据
     train_acces = []
     valid_acces = []
     train_losses = []
     valid_losses = []
 
+    old_lr = optimizer.state_dict()['param_groups'][0]['lr']
+
     # 开始循环训练模型
     for epoch in range(0, epochs):
-
         # 训练一次
         model, optimizer, train_loss = train(train_loader, model, criterion, optimizer, device)
         train_losses.append(train_loss)
@@ -117,12 +123,19 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
             model, valid_loss = validate(valid_loader, model, criterion, device)
             valid_losses.append(valid_loss)
 
+        scheduler.step()
+        new_lr = optimizer.state_dict()['param_groups'][0]['lr']
+        if old_lr != new_lr:
+            print(f'\t\t\t\t\t\t'
+                  f'Learning Rate由{old_lr}转为{new_lr}，下次epoch生效')
+            old_lr = new_lr
+
         if epoch % print_every == (print_every - 1):
             train_acc = get_accuracy(model, train_loader, device=device)
             valid_acc = get_accuracy(model, valid_loader, device=device)
 
             # 输出本次训练的数据
-            print(f'{datetime.now().time().replace(microsecond=0)} --- '
+            print(f'{real_Time()} --- '
                   f'Epoch: {epoch + 1}\t'
                   f'Train loss: {train_loss:.4f}\t'
                   f'Valid loss: {valid_loss:.4f}\t'
@@ -131,21 +144,39 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, epoch
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
 
+        '''
+        if DLR:
+            if DLR == 3:
+                if epoch == int(epochs / 3) or epoch == int(2 * epochs / 3):
+                    update_lr(optimizer, reduction)
+            else:
+                if epoch == int(epochs / 2):
+                    update_lr(optimizer, reduction)
+        '''
+
     # 循环训练结束，计算top1err和top5err，根据时间戳保存数据并绘图
     unix_timestamp = str(int(time.time()))
     top1err = evaluteTop1(model, valid_loader)
     top5err = evaluteTop5(model, valid_loader)
-    print(f'{datetime.now().time().replace(microsecond=0)} --- '
+    print(f'{real_Time()} --- '
           f'当前时间戳为: {unix_timestamp}\t'
-          f'top1 err.: {top1err}\t'
-          f'top5 err.: {top5err}')
-    full_plot(epochs, train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
+          f'top1 acc: {top1err}\t'
+          f'top5 acc: {top5err}')
+    full_plot(train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
     saveNpy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
+def update_lr(optimizer, reduction):
+    curr_lr = optimizer.state_dict()['param_groups'][0]['lr']
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = curr_lr / reduction
+    print(f'\t\t\t\t\t\t'
+          f'Learning Rate由{curr_lr}转为{curr_lr / reduction}，下次epoch生效')
+
+
 def evaluteTop1(model, loader):
-    # 计算top1 error
+    # 计算top1 acc
     model.eval()
 
     correct = 0
@@ -161,7 +192,7 @@ def evaluteTop1(model, loader):
 
 
 def evaluteTop5(model, loader):
-    # 计算top5 error
+    # 计算top5 acc
     model.eval()
     correct = 0
     total = len(loader.dataset)
@@ -177,7 +208,7 @@ def evaluteTop5(model, loader):
     return correct / total
 
 
-def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, savePath='./png/'):
+def full_plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, savePath='./png/'):
     # 绘图
     train_loss = np.array(train_loss)
 
@@ -191,6 +222,8 @@ def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_times
     l2 = ax.plot(valid_loss, '--', color='red', label="Valid loss")
 
     ax2 = ax.twinx()
+    if np.max(valid_acc) < 0.90:
+        ax2.set(ylim=(0.30, 1.00))
 
     l3 = ax2.plot(train_acc, color='blue', label="Train acc")
     l4 = ax2.plot(valid_acc, color='red', label="Valid acc")
@@ -199,6 +232,7 @@ def full_plot(N_EPOCHS, train_loss, valid_loss, train_acc, valid_acc, unix_times
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper left')
 
+    N_EPOCHS = np.array(valid_acc).size
     if N_EPOCHS == 50:
         blink = 7
     elif N_EPOCHS == 15:
