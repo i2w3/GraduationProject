@@ -3,6 +3,7 @@ import time
 import torch
 import numpy as np
 import torch.nn as nn
+from decimal import Decimal
 from d2l import torch as d2l
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -70,7 +71,13 @@ def train(train_loader, model, criterion, optimizer, device):
 
         # Backward pass
         loss.backward()
+
+        old_lr = remove_extra_zero(get_LearningRate(optimizer))
         optimizer.step()
+        new_lr = remove_extra_zero(get_LearningRate(optimizer))
+        if old_lr != new_lr:
+            print(f'\t\t\t\t\t\t'
+                  f'Learning Rate由{old_lr}转为{new_lr}，下次epoch生效')
 
     epoch_loss = running_loss / len(train_loader.dataset)
     return model, optimizer, epoch_loss
@@ -97,7 +104,7 @@ def validate(valid_loader, model, criterion, device):
 
 
 def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1, DLR=None,
-                  milestones=[135, 185],
+                  milestones=[100, 160],
                   reduction=10):
     # 模型的训练循环
 
@@ -111,8 +118,6 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
     train_losses = []
     valid_losses = []
 
-    old_lr = optimizer.state_dict()['param_groups'][0]['lr']
-
     # 开始循环训练模型
     for epoch in range(0, epochs):
         # 训练一次
@@ -125,11 +130,6 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
             valid_losses.append(valid_loss)
 
         scheduler.step()
-        new_lr = optimizer.state_dict()['param_groups'][0]['lr']
-        if old_lr != new_lr:
-            print(f'\t\t\t\t\t\t'
-                  f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
-            old_lr = new_lr
 
         if epoch % print_every == (print_every - 1):
             train_acc = get_accuracy(model, train_loader, device=device)
@@ -290,3 +290,17 @@ def saveNpy(unix_timestamp, train_loss, valid_loss, train_acc, valid_acc, Path="
     np.save(npy_path + "valid_acc" + ".npy", valid_acc)
     np.save(npy_path + "train_loss" + ".npy", train_loss)
     np.save(npy_path + "valid_loss" + ".npy", valid_loss)
+
+
+def remove_extra_zero(num):
+    """删除小数点后多余的0"""
+    if isinstance(num, int):
+        return num
+    if isinstance(num, float):
+        num = str(num).rstrip('0')  # 删除小数点后多余的0
+        num = int(num.rstrip('.')) if num.endswith('.') else float(num)  # 只剩小数点直接转int，否则转回float
+        return num
+
+
+def get_LearningRate(optimizer):
+    return optimizer.state_dict()['param_groups'][0]['lr']
