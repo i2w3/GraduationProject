@@ -3,7 +3,6 @@ import time
 import torch
 import numpy as np
 import torch.nn as nn
-from decimal import Decimal
 from d2l import torch as d2l
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -17,6 +16,7 @@ def check_Device():
 
 
 def real_Time():
+    # 获取当前时间(格式H:M:S)
     return datetime.now().time().replace(microsecond=0)
 
 
@@ -104,14 +104,14 @@ def validate(valid_loader, model, criterion, device):
 
 
 def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1, DLR=None,
-                  milestones=[100, 160],
-                  reduction=10):
+                  milestones=[100, 160]):
     # 模型的训练循环
 
     print(f'{real_Time()} --- '
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.9)
     # 保存数据
     train_acces = []
     valid_acces = []
@@ -123,13 +123,12 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
         # 训练一次
         model, optimizer, train_loss = train(train_loader, model, criterion, optimizer, device)
         train_losses.append(train_loss)
+        old_lr = remove_extra_zero(get_LearningRate(optimizer))
 
         # 验证一次
         with torch.no_grad():
             model, valid_loss = validate(valid_loader, model, criterion, device)
             valid_losses.append(valid_loss)
-
-        scheduler.step()
 
         if epoch % print_every == (print_every - 1):
             train_acc = get_accuracy(model, train_loader, device=device)
@@ -145,15 +144,11 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
 
-        '''
-        if DLR:
-            if DLR == 3:
-                if epoch == int(epochs / 3) or epoch == int(2 * epochs / 3):
-                    update_lr(optimizer, reduction)
-            else:
-                if epoch == int(epochs / 2):
-                    update_lr(optimizer, reduction)
-        '''
+        scheduler.step()
+        new_lr = remove_extra_zero(get_LearningRate(optimizer))
+        if old_lr != new_lr:
+            print(f'\t\t\t\t\t\t'
+                  f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
 
     # 循环训练结束，计算top1err和top5err，根据时间戳保存数据并绘图
     unix_timestamp = str(int(time.time()))
@@ -163,9 +158,9 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
           f'当前时间戳为: {unix_timestamp}\t'
           f'top1 acc: {top1err}\t'
           f'top5 acc: {top5err}')
-    full_plot(train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
-    saveNpy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
-    torch.save(model, "./png/" + str(unix_timestamp) + "/model.pt")
+    full_Plot(train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
+    save_Npy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
+    save_Model(unix_timestamp, model)
     return model, optimizer, (train_losses, valid_losses), (train_acces, valid_acces)
 
 
@@ -210,8 +205,8 @@ def evaluteTop5(model, loader):
     return correct / total
 
 
-def full_plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, savePath='./png/'):
-    # 绘图
+def full_Plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, savePath='./png/'):
+    # 绘图，将train_loss, valid_loss, train_acc, valid_acc全部绘制在图上并根据时间戳保存
     train_loss = np.array(train_loss)
 
     valid_loss = np.array(valid_loss)
@@ -234,20 +229,20 @@ def full_plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
     labs = [l.get_label() for l in lns]
     ax.legend(lns, labs, loc='upper left')
 
-    N_EPOCHS = np.array(valid_acc).size
-    if N_EPOCHS == 50:
+    EPOCHS = np.array(valid_acc).size
+    if EPOCHS == 50:
         blink = 7
-    elif N_EPOCHS == 15:
+    elif EPOCHS == 15:
         blink = 2
-    elif N_EPOCHS == 240:
+    elif EPOCHS == 240:
         blink = 34
     else:
         blink = 18
-    ticks = list(range(0, N_EPOCHS, blink))
-    if N_EPOCHS or N_EPOCHS == 15:
-        ticks.append(N_EPOCHS - 1)
+    ticks = list(range(0, EPOCHS, blink))
+    if EPOCHS == 15 or EPOCHS == 50:
+        ticks.append(EPOCHS - 1)
     else:
-        ticks[-1] = N_EPOCHS
+        ticks[-1] = EPOCHS
 
     tickl = [i + 1 for i in ticks]
     ax.set_xticks(ticks)
@@ -269,7 +264,7 @@ def full_plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
     plt.style.use('default')
 
 
-def loadNpy(unix_timestamp, Path="./png/"):
+def load_Npy(unix_timestamp, Path="./png/"):
     # 读取训练数据
     npy_path = Path + str(unix_timestamp) + "/"
 
@@ -282,7 +277,7 @@ def loadNpy(unix_timestamp, Path="./png/"):
     return (train_acc, valid_acc), (train_loss, valid_loss)
 
 
-def saveNpy(unix_timestamp, train_loss, valid_loss, train_acc, valid_acc, Path="./png/"):
+def save_Npy(unix_timestamp, train_loss, valid_loss, train_acc, valid_acc, Path="./png/"):
     # 保存训练数据
     npy_path = Path + str(unix_timestamp) + "/"
 
@@ -292,8 +287,14 @@ def saveNpy(unix_timestamp, train_loss, valid_loss, train_acc, valid_acc, Path="
     np.save(npy_path + "valid_loss" + ".npy", valid_loss)
 
 
+def save_Model(unix_timestamp, model, Path="./png/"):
+    # 保存网络模型
+    model_path = Path + str(unix_timestamp) + "/"
+    torch.save(model, model_path + "model.pt")
+
+
 def remove_extra_zero(num):
-    """删除小数点后多余的0"""
+    # 删除浮点数小数点后多余的0
     if isinstance(num, int):
         return num
     if isinstance(num, float):
