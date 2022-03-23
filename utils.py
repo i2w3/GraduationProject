@@ -111,7 +111,7 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
     # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.9)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.9)
     # 保存数据
     train_acces = []
     valid_acces = []
@@ -144,11 +144,16 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
 
-        scheduler.step()
+        # scheduler.step()
+        '''
         new_lr = remove_extra_zero(get_LearningRate(optimizer))
         if old_lr != new_lr:
             print(f'\t\t\t\t\t\t'
                   f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
+        
+        
+        '''
+
 
     # 循环训练结束，计算top1err和top5err，根据时间戳保存数据并绘图
     unix_timestamp = str(int(time.time()))

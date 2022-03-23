@@ -40,19 +40,19 @@ def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
             1)
 
 
-def load_CIFAR10(batch_size, resize=None, normalize=None, Random=None):
+def load_CIFAR10(batch_size, normalize=None, Random=None):
     if normalize:
         normalize = "CIFAR10"
     CIFAR10_train = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                      train=True,  # 作为训练集
                                      download=True,  # 是否下载该数据集
-                                     transform=trans_Compose(resize, normalize, Random)
+                                     transform=trans_Compose(normalize=normalize, Random=Random)
                                      )
     print(f"CIFAR10训练数据集处理完成")
     CIFAR10_test = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                     train=False,  # 作为测试集
                                     download=True,  # 是否下载该数据集
-                                    transform=trans_Compose(resize, normalize)
+                                    transform=trans_Compose(normalize=normalize)
                                     )
     print(f"CIFAR10测试数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),
