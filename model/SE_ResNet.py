@@ -88,6 +88,6 @@ def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     return model
 
 
-def se_resnet18(pretrained=False, progress=True, **kwargs):
+def se_resnet18(device, pretrained=False, progress=True, **kwargs):
     return _resnet('resnet18', SEBasicBlock, [2, 2, 2, 2], pretrained, progress,
-                   **kwargs)
+                   **kwargs).to(device)

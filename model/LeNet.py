@@ -1,5 +1,5 @@
 import torch.nn as nn
-from model.SE_Block import SEBlock
+from model.SE_ResNet import SEBlock
 
 
 def Lenet(channel, SE2=None, BN2=None, SE1=None, BN1=None, reduction=16):
