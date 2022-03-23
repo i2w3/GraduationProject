@@ -103,8 +103,7 @@ def validate(valid_loader, model, criterion, device):
     return model, epoch_loss
 
 
-def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1, DLR=None,
-                  ):
+def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1):
     # 模型的训练循环
     milestones = [70, 110]
     print(f'{real_Time()} --- '
@@ -150,8 +149,7 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
             print(f'\t\t\t\t\t\t'
                   f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
 
-
-    # 循环训练结束，计算top1err和top5err，根据时间戳保存数据并绘图
+    # 循环训练结束，计算top1acc和top5acc，根据时间戳保存数据并绘图
     unix_timestamp = str(int(time.time()))
     top1err = evaluteTop1(model, valid_loader)
     top5err = evaluteTop5(model, valid_loader)
