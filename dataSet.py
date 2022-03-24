@@ -14,7 +14,7 @@ def trans_Compose(resize=None, normalize=None, Random=None):
         if normalize == "MNIST":
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
         if normalize == "CIFAR10":
-            trans.append(transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)))
+            trans.append(transforms.Normalize([0.4914, 0.4822, 0.4465],[0.2023, 0.1994, 0.2010]))
         print(f"Dataset enable Normalize")
     return transforms.Compose(trans)
 
