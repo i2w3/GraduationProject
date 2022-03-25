@@ -16,6 +16,8 @@ def trans_Compose(Resize=None, Normalize=None, Random=None, Noise=None):
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
         if Normalize == "CIFAR10":
             trans.append(transforms.Normalize([0.4914, 0.4822, 0.4465], [0.2023, 0.1994, 0.2010]))
+        if Normalize == "CIFAR100":
+            trans.append(transforms.Normalize([0.5071, 0.4865, 0.4409], [0.2673, 0.2564, 0.2762]))
         print(f"Dataset enable Normalize")
     if Noise:
         trans.append(transforms.RandomApply([AddGaussianNoise(0., 1.)], p=0.3))
@@ -63,6 +65,27 @@ def load_CIFAR10(batch_size, Resize=None, Normalize=None, Random=None, Noise=Non
     print(f"CIFAR10测试数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),
             DataLoader(CIFAR10_test, batch_size=batch_size, shuffle=False),
+            3)
+
+
+def load_CIFAR100(batch_size, Resize=None, Normalize=None, Random=None, Noise=None):
+    global normalize
+    if Normalize:
+        normalize = "CIFAR100"
+    CIFAR100_train = datasets.CIFAR100(root=r'.\data',  # 数据保存路径
+                                       train=True,  # 作为训练集
+                                       download=True,  # 是否下载该数据集
+                                       transform=trans_Compose(Normalize=normalize, Random=Random, Noise=Noise)
+                                       )
+    print(f"CIFAR100训练数据集处理完成")
+    CIFAR100_test = datasets.CIFAR100(root=r'.\data',  # 数据保存路径
+                                      train=False,  # 作为测试集
+                                      download=True,  # 是否下载该数据集
+                                      transform=trans_Compose(Normalize=normalize)
+                                      )
+    print(f"CIFAR100测试数据集处理完成")
+    return (DataLoader(CIFAR100_train, batch_size=batch_size, shuffle=True),
+            DataLoader(CIFAR100_test, batch_size=batch_size, shuffle=False),
             3)
 
 
