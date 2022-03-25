@@ -19,7 +19,7 @@ EPOCHS = 200
 
 # 数据设置
 # train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
-train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, normalize=True, Random=True)
+train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, normalize=True, Random=True, Noise=None)
 
 # net = resnet18()
 # net = se_resnet18()

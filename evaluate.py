@@ -5,7 +5,7 @@ from utils import *
 # 检查cuda
 device = check_Device()
 # 加载
-net = torch.load('./png/1648151594/model.pt')
+net = torch.load('./data/SE SE ResNet18/model.pt')
 net.eval()
 
 # top1 acc 和 top5 acc
@@ -13,7 +13,7 @@ correct_1 = 0.0
 correct_5 = 0.0
 total = 0
 
-_, valid_loader, _ = load_CIFAR10(128, normalize=True, Random=True)
+_, valid_loader, _ = load_CIFAR10(128, Normalize=True, Random=True)
 
 with torch.no_grad():
     for n_iter, (image, label) in enumerate(valid_loader):
