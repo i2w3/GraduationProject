@@ -72,12 +72,7 @@ def train(train_loader, model, criterion, optimizer, device):
         # Backward pass
         loss.backward()
 
-        old_lr = remove_extra_zero(get_LearningRate(optimizer))
         optimizer.step()
-        new_lr = remove_extra_zero(get_LearningRate(optimizer))
-        if old_lr != new_lr:
-            print(f'\t\t\t\t\t\t'
-                  f'Learning Rate由{old_lr}转为{new_lr}，下次epoch生效')
 
     epoch_loss = running_loss / len(train_loader.dataset)
     return model, optimizer, epoch_loss
@@ -105,7 +100,7 @@ def validate(valid_loader, model, criterion, device):
 
 def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1):
     # 模型的训练循环
-    milestones = [70, 110]
+    milestones = [65, 110]
     print(f'{real_Time()} --- '
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
@@ -122,7 +117,6 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
         # 训练一次
         model, optimizer, train_loss = train(train_loader, model, criterion, optimizer, device)
         train_losses.append(train_loss)
-        old_lr = remove_extra_zero(get_LearningRate(optimizer))
 
         # 验证一次
         with torch.no_grad():
@@ -143,11 +137,12 @@ def training_loop(model, criterion, optimizer, train_loader, valid_loader, devic
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
 
-        scheduler.step()
-        new_lr = remove_extra_zero(get_LearningRate(optimizer))
-        if old_lr != new_lr:
-            print(f'\t\t\t\t\t\t'
-                  f'Learning Rate由{old_lr:.4f}转为{new_lr:.4f}，下次epoch生效')
+            old_lr = remove_extra_zero(get_LearningRate(optimizer))
+            scheduler.step()
+            new_lr = remove_extra_zero(get_LearningRate(optimizer))
+            if old_lr != new_lr:
+                print(f'\t\t\t\t\t\t'
+                      f'Learning Rate由{old_lr}转为{new_lr}，下次epoch生效')
 
     # 循环训练结束，计算top1acc和top5acc，根据时间戳保存数据并绘图
     unix_timestamp = str(int(time.time()))

@@ -1,7 +1,7 @@
 from utils import *
 from model.LeNet import Lenet
 from model.ResNet import resnet18
-from model.SE_ResNet import se_resnet18
+from model.SE_ResNet import se_resnet18, twose_resnet18
 from dataSet import load_MNIST, load_CIFAR10
 from torchsummary import summary
 
@@ -21,8 +21,8 @@ EPOCHS = 130
 train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, normalize=True, Random=True)
 
 # net = resnet18()
-net = se_resnet18()
-
+# net = se_resnet18()
+net = twose_resnet18()
 # net = Lenet(channel)
 # net = Lenet(channel, BN2=True)
 # net = Lenet(channel, SE2=True, BN2=True, reduction=16)

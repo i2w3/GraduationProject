@@ -23,7 +23,6 @@ def Lenet(channel, SE2=None, BN2=None, SE1=None, BN1=None, reduction=16):
         net.add_module("SE Block1", SEBlock(6, reduction=reduction))
         print(f"SE1 Reduction={reduction}")
 
-
     # Pool 1
     net.add_module("Pool1", nn.AvgPool2d(kernel_size=2, stride=2))
 
