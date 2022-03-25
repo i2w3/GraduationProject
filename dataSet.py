@@ -47,7 +47,7 @@ def load_MNIST(batch_size, Resize=None, Normalize=None, Random=None, Noise=None)
             1)
 
 
-def load_CIFAR10(batch_size, Resize=None, Normalize=None, Random=None, Noise=None):
+def load_CIFAR10(batch_size, Resize=None, Normalize=None, Random=None, Noise=None, Shuffle=False):
     global normalize
     if Normalize:
         normalize = "CIFAR10"
@@ -64,11 +64,11 @@ def load_CIFAR10(batch_size, Resize=None, Normalize=None, Random=None, Noise=Non
                                     )
     print(f"CIFAR10测试数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),
-            DataLoader(CIFAR10_test, batch_size=batch_size, shuffle=False),
+            DataLoader(CIFAR10_test, batch_size=batch_size, shuffle=Shuffle),
             3)
 
 
-def load_CIFAR100(batch_size, Resize=None, Normalize=None, Random=None, Noise=None):
+def load_CIFAR100(batch_size, Resize=None, Normalize=None, Random=None, Noise=None, Shuffle=False):
     global normalize
     if Normalize:
         normalize = "CIFAR100"
@@ -85,7 +85,7 @@ def load_CIFAR100(batch_size, Resize=None, Normalize=None, Random=None, Noise=No
                                       )
     print(f"CIFAR100测试数据集处理完成")
     return (DataLoader(CIFAR100_train, batch_size=batch_size, shuffle=True),
-            DataLoader(CIFAR100_test, batch_size=batch_size, shuffle=False),
+            DataLoader(CIFAR100_test, batch_size=batch_size, shuffle=Shuffle),
             3)
 
 
