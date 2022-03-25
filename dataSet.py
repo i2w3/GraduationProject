@@ -3,39 +3,41 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 
-def trans_Compose(resize=None, normalize=None, Random=None):
+def trans_Compose(Resize=None, Normalize=None, Random=None, Noise=None):
     trans = [transforms.ToTensor()]
     if Random:
         trans.insert(0, transforms.RandomCrop(32, padding=4))  # 数据增广
         trans.insert(0, transforms.RandomHorizontalFlip())  # 依50%概率水平翻转
         print(f"Dataset enable Random")
-    if resize:
-        trans.insert(0, transforms.Resize(resize))  # 调整data的size
-    if normalize:
-        if normalize == "MNIST":
+    if Resize:
+        trans.insert(0, transforms.Resize(Resize))  # 调整data的size
+    if Normalize:
+        if Normalize == "MNIST":
             trans.append(transforms.Normalize([0.1307, ], [0.3081, ]))
-        if normalize == "CIFAR10":
+        if Normalize == "CIFAR10":
             trans.append(transforms.Normalize([0.4914, 0.4822, 0.4465], [0.2023, 0.1994, 0.2010]))
         print(f"Dataset enable Normalize")
-    if Random:
+    if Noise:
         trans.append(transforms.RandomApply([AddGaussianNoise(0., 1.)], p=0.3))
+        print(f"Dataset enable Noise")
     return transforms.Compose(trans)
 
 
 # 加载数据集
-def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
-    if normalize:
+def load_MNIST(batch_size, Resize=None, Normalize=None, Random=None, Noise=None):
+    global normalize
+    if Normalize:
         normalize = "MNIST"
     MNIST_train = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                  train=True,  # 作为训练集
                                  download=True,  # 是否下载该数据集
-                                 transform=trans_Compose(resize, normalize, Random)
+                                 transform=trans_Compose(Resize, normalize, Random, Noise)
                                  )
     print(f"MNIST训练数据集处理完成")
     MNIST_test = datasets.MNIST(root=r'.\data',  # 数据保存路径
                                 train=False,  # 作为测试集
                                 download=True,  # 是否下载该数据集
-                                transform=trans_Compose(resize, normalize)
+                                transform=trans_Compose(Resize, normalize)
                                 )
     print(f"MNIST测试数据集处理完成")
     return (DataLoader(MNIST_train, batch_size=batch_size, shuffle=True),
@@ -43,19 +45,20 @@ def load_MNIST(batch_size, resize=None, normalize=None, Random=None):
             1)
 
 
-def load_CIFAR10(batch_size, normalize=None, Random=None):
-    if normalize:
+def load_CIFAR10(batch_size, Resize=None, Normalize=None, Random=None, Noise=None):
+    global normalize
+    if Normalize:
         normalize = "CIFAR10"
     CIFAR10_train = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                      train=True,  # 作为训练集
                                      download=True,  # 是否下载该数据集
-                                     transform=trans_Compose(normalize=normalize, Random=Random)
+                                     transform=trans_Compose(Normalize=normalize, Random=Random, Noise=Noise)
                                      )
     print(f"CIFAR10训练数据集处理完成")
     CIFAR10_test = datasets.CIFAR10(root=r'.\data',  # 数据保存路径
                                     train=False,  # 作为测试集
                                     download=True,  # 是否下载该数据集
-                                    transform=trans_Compose(normalize=normalize)
+                                    transform=trans_Compose(Normalize=normalize)
                                     )
     print(f"CIFAR10测试数据集处理完成")
     return (DataLoader(CIFAR10_train, batch_size=batch_size, shuffle=True),

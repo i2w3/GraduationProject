@@ -14,7 +14,8 @@ seed_Setting(0)
 # 参数设置
 LEARNING_RATE = 0.1
 BATCH_SIZE = 128
-EPOCHS = 130
+# EPOCHS = 130
+EPOCHS = 200
 
 # 数据设置
 # train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))

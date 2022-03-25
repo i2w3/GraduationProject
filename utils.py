@@ -1,6 +1,7 @@
 import os
 import time
 import torch
+import zipfile
 import numpy as np
 import torch.nn as nn
 from d2l import torch as d2l
@@ -100,11 +101,13 @@ def validate(valid_loader, model, criterion, device):
 
 def training_loop(model, criterion, optimizer, train_loader, valid_loader, device, epochs, print_every=1):
     # 模型的训练循环
-    milestones = [65, 110]
+    # milestones = [65, 110]
+    milestones = [60, 120, 160]
     print(f'{real_Time()} --- '
           f'Start training loop\t'
           f'training on: {device}')  # 打印训练设备
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.2)
     # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.9)
     # 保存数据
     train_acces = []
@@ -299,3 +302,29 @@ def remove_extra_zero(num):
 
 def get_LearningRate(optimizer):
     return optimizer.state_dict()['param_groups'][0]['lr']
+
+
+def zip_Dir(dirpath, outFullName):
+    """
+    压缩指定文件夹
+    :param dirpath: 目标文件夹路径
+    :param outFullName: 压缩文件保存路径+xxxx.zip
+    :return: 无
+    """
+    zip = zipfile.ZipFile(outFullName, "w", zipfile.ZIP_DEFLATED)
+    for path, dirnames, filenames in os.walk(dirpath):
+        # 去掉目标跟路径，只对目标文件夹下边的文件及文件夹进行压缩
+        fpath = path.replace(dirpath, '')
+
+        for filename in filenames:
+            zip.write(os.path.join(path, filename), os.path.join(fpath, filename))
+    zip.close()
+
+
+def ls_Dir(dirpath):
+    return os.listdir(dirpath)
+
+
+def zip_AllData(dirpath):
+    for dir in ls_Dir(dirpath):
+        zip_Dir(dirpath + "/" + dir, "./" + dir + ".zip")
