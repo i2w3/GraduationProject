@@ -19,7 +19,7 @@ EPOCHS = 200
 
 # 数据设置
 # train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, resize=(32, 32))
-train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, normalize=True, Random=True, Noise=None)
+train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, Normalize=True, Random=True, Noise=None)
 
 # net = resnet18()
 # net = se_resnet18()
@@ -37,7 +37,7 @@ summary(model, (channel, 224, 224))
 params = sum(p.numel() for p in list(model.parameters())) / 1e6
 print('#Params: %.1fM' % params)
 
-# optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
-optimizer = torch.optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=5e-4)
+optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
+# optimizer = torch.optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=5e-4)
 criterion = nn.CrossEntropyLoss()
 model, optimizer, (_, _), (_, _) = training_loop(model, criterion, optimizer, train_loader, valid_loader, device,EPOCHS)
