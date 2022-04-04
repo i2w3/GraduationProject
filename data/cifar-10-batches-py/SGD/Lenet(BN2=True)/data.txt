@@ -1,0 +1,79 @@
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1            [-1, 6, 28, 28]             456
+              Tanh-2            [-1, 6, 28, 28]               0
+         AvgPool2d-3            [-1, 6, 14, 14]               0
+            Conv2d-4           [-1, 16, 10, 10]           2,416
+       BatchNorm2d-5           [-1, 16, 10, 10]              32
+              Tanh-6           [-1, 16, 10, 10]               0
+         AvgPool2d-7             [-1, 16, 5, 5]               0
+           Flatten-8                  [-1, 400]               0
+            Linear-9                  [-1, 120]          48,120
+             Tanh-10                  [-1, 120]               0
+           Linear-11                   [-1, 84]          10,164
+             Tanh-12                   [-1, 84]               0
+           Linear-13                   [-1, 10]             850
+================================================================
+Total params: 62,038
+Trainable params: 62,038
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.01
+Forward/backward pass size (MB): 0.13
+Params size (MB): 0.24
+Estimated Total Size (MB): 0.38
+----------------------------------------------------------------
+#Params: 0.1M
+16:51:03 --- Start training loop	training on: cuda
+16:51:43 --- Epoch: 1	Train loss: 1.7970	Valid loss: 1.5844	Train accuracy: 39.67	Valid accuracy: 43.28
+16:52:17 --- Epoch: 2	Train loss: 1.5912	Valid loss: 1.4698	Train accuracy: 43.10	Valid accuracy: 47.13
+16:52:55 --- Epoch: 3	Train loss: 1.5398	Valid loss: 1.4481	Train accuracy: 44.90	Valid accuracy: 48.09
+16:53:36 --- Epoch: 4	Train loss: 1.4956	Valid loss: 1.4292	Train accuracy: 44.26	Valid accuracy: 47.38
+16:54:09 --- Epoch: 5	Train loss: 1.4740	Valid loss: 1.3859	Train accuracy: 47.54	Valid accuracy: 50.24
+16:54:46 --- Epoch: 6	Train loss: 1.4358	Valid loss: 1.3274	Train accuracy: 49.81	Valid accuracy: 53.12
+16:55:26 --- Epoch: 7	Train loss: 1.4120	Valid loss: 1.2913	Train accuracy: 51.92	Valid accuracy: 54.96
+16:55:59 --- Epoch: 8	Train loss: 1.3871	Valid loss: 1.3237	Train accuracy: 51.25	Valid accuracy: 53.51
+16:56:36 --- Epoch: 9	Train loss: 1.3743	Valid loss: 1.2714	Train accuracy: 51.89	Valid accuracy: 54.40
+16:57:17 --- Epoch: 10	Train loss: 1.3531	Valid loss: 1.2773	Train accuracy: 52.20	Valid accuracy: 54.31
+16:57:51 --- Epoch: 11	Train loss: 1.3425	Valid loss: 1.2861	Train accuracy: 52.02	Valid accuracy: 54.94
+16:58:28 --- Epoch: 12	Train loss: 1.3321	Valid loss: 1.2226	Train accuracy: 53.76	Valid accuracy: 56.43
+16:59:08 --- Epoch: 13	Train loss: 1.3281	Valid loss: 1.3720	Train accuracy: 50.46	Valid accuracy: 53.11
+16:59:42 --- Epoch: 14	Train loss: 1.3134	Valid loss: 1.2211	Train accuracy: 54.63	Valid accuracy: 57.17
+17:00:19 --- Epoch: 15	Train loss: 1.3082	Valid loss: 1.2110	Train accuracy: 55.64	Valid accuracy: 57.87
+17:00:59 --- Epoch: 16	Train loss: 1.2910	Valid loss: 1.2957	Train accuracy: 53.70	Valid accuracy: 56.24
+17:01:33 --- Epoch: 17	Train loss: 1.3014	Valid loss: 1.1726	Train accuracy: 56.33	Valid accuracy: 58.72
+17:02:10 --- Epoch: 18	Train loss: 1.2765	Valid loss: 1.1996	Train accuracy: 55.96	Valid accuracy: 57.86
+17:02:50 --- Epoch: 19	Train loss: 1.2773	Valid loss: 1.2636	Train accuracy: 54.00	Valid accuracy: 55.63
+17:03:23 --- Epoch: 20	Train loss: 1.2676	Valid loss: 1.2088	Train accuracy: 56.39	Valid accuracy: 57.89
+17:04:01 --- Epoch: 21	Train loss: 1.2643	Valid loss: 1.2304	Train accuracy: 54.84	Valid accuracy: 56.61
+17:04:41 --- Epoch: 22	Train loss: 1.2624	Valid loss: 1.2113	Train accuracy: 55.95	Valid accuracy: 57.54
+17:05:14 --- Epoch: 23	Train loss: 1.2496	Valid loss: 1.2061	Train accuracy: 55.89	Valid accuracy: 57.53
+17:05:52 --- Epoch: 24	Train loss: 1.2509	Valid loss: 1.1814	Train accuracy: 57.04	Valid accuracy: 58.81
+17:06:32 --- Epoch: 25	Train loss: 1.2512	Valid loss: 1.1973	Train accuracy: 56.33	Valid accuracy: 58.12
+17:07:06 --- Epoch: 26	Train loss: 1.2485	Valid loss: 1.2054	Train accuracy: 56.23	Valid accuracy: 57.98
+17:07:43 --- Epoch: 27	Train loss: 1.2295	Valid loss: 1.1597	Train accuracy: 57.53	Valid accuracy: 59.60
+17:08:23 --- Epoch: 28	Train loss: 1.2305	Valid loss: 1.2305	Train accuracy: 54.89	Valid accuracy: 56.56
+17:08:56 --- Epoch: 29	Train loss: 1.2282	Valid loss: 1.2369	Train accuracy: 54.86	Valid accuracy: 56.65
+17:09:34 --- Epoch: 30	Train loss: 1.2268	Valid loss: 1.1986	Train accuracy: 56.98	Valid accuracy: 58.57
+17:10:14 --- Epoch: 31	Train loss: 1.2160	Valid loss: 1.1730	Train accuracy: 57.93	Valid accuracy: 59.48
+17:10:48 --- Epoch: 32	Train loss: 1.2155	Valid loss: 1.1677	Train accuracy: 56.93	Valid accuracy: 58.14
+17:11:28 --- Epoch: 33	Train loss: 1.2104	Valid loss: 1.2565	Train accuracy: 55.41	Valid accuracy: 56.32
+17:12:13 --- Epoch: 34	Train loss: 1.2073	Valid loss: 1.1895	Train accuracy: 56.48	Valid accuracy: 57.81
+17:12:58 --- Epoch: 35	Train loss: 1.2084	Valid loss: 1.1267	Train accuracy: 58.32	Valid accuracy: 60.59
+17:13:37 --- Epoch: 36	Train loss: 1.2178	Valid loss: 1.1405	Train accuracy: 58.51	Valid accuracy: 59.93
+17:14:20 --- Epoch: 37	Train loss: 1.2208	Valid loss: 1.1767	Train accuracy: 57.32	Valid accuracy: 58.69
+17:15:03 --- Epoch: 38	Train loss: 1.1977	Valid loss: 1.1281	Train accuracy: 59.35	Valid accuracy: 60.71
+17:15:45 --- Epoch: 39	Train loss: 1.2164	Valid loss: 1.1416	Train accuracy: 58.83	Valid accuracy: 59.71
+17:16:29 --- Epoch: 40	Train loss: 1.2098	Valid loss: 1.1951	Train accuracy: 56.29	Valid accuracy: 58.32
+17:17:08 --- Epoch: 41	Train loss: 1.1980	Valid loss: 1.1466	Train accuracy: 57.95	Valid accuracy: 59.21
+17:17:49 --- Epoch: 42	Train loss: 1.2060	Valid loss: 1.1285	Train accuracy: 58.21	Valid accuracy: 60.42
+17:18:31 --- Epoch: 43	Train loss: 1.1994	Valid loss: 1.1770	Train accuracy: 57.44	Valid accuracy: 58.77
+17:19:07 --- Epoch: 44	Train loss: 1.1898	Valid loss: 1.0954	Train accuracy: 59.46	Valid accuracy: 61.34
+17:19:48 --- Epoch: 45	Train loss: 1.1932	Valid loss: 1.1484	Train accuracy: 58.05	Valid accuracy: 59.71
+17:20:30 --- Epoch: 46	Train loss: 1.1814	Valid loss: 1.1892	Train accuracy: 56.35	Valid accuracy: 58.06
+17:21:05 --- Epoch: 47	Train loss: 1.1895	Valid loss: 1.1380	Train accuracy: 58.35	Valid accuracy: 60.14
+17:21:45 --- Epoch: 48	Train loss: 1.1793	Valid loss: 1.1912	Train accuracy: 55.77	Valid accuracy: 57.86
+17:22:27 --- Epoch: 49	Train loss: 1.1876	Valid loss: 1.1424	Train accuracy: 58.68	Valid accuracy: 60.10
+17:23:03 --- Epoch: 50	Train loss: 1.1916	Valid loss: 1.1192	Train accuracy: 59.36	Valid accuracy: 60.80
+17:23:09 --- 当前时间戳为: 1648891383	top1 acc: 0.608	top5 acc: 0.9572
