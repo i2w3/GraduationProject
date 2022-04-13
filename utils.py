@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import torch
 import zipfile
@@ -38,7 +39,7 @@ def seed_Setting(SEED):
         torch.backends.cudnn.benchmark = True
 
 
-def get_accuracy(net, data_iter, device=None):
+def get_Accuracy(net, data_iter, device=None):
     # 计算模型在数据集上的精度
     if isinstance(net, nn.Module):
         net.eval()  # 设置为评估模式
@@ -203,7 +204,7 @@ def evaluteTop5(model, loader):
     return correct / total
 
 
-def TopErr(model, loader, device):
+def top_Err(model, loader, device):
     model.eval()
 
     # top1 acc 和 top5 acc
@@ -389,3 +390,16 @@ def zip_AllData(dirpath):
     """
     for dir in os.listdir(dirpath):
         zip_Dir(dirpath + "/" + dir, "./" + dir + ".zip")
+
+
+def time_Stamp():
+    return int(time.time())
+
+
+def data_Save(model, train_losses, valid_losses, train_acces, valid_acces, unix_timestamp):
+    # 绘制训练loss和测试loss、训练acc和测试acc的图
+    full_Plot(train_losses, valid_losses, train_acces, valid_acces, unix_timestamp)
+    # 保存训练loss和测试loss、训练acc和测试acc
+    save_Npy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
+    # 保存网络模型
+    save_Model(unix_timestamp, model)

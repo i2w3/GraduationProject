@@ -2,7 +2,9 @@ import torch.nn as nn
 from torchvision.models import ResNet
 
 '''
-构建se_resnet18
+构建se_resnet18，主要有两种类型:
+一是se_resnet18，只在残差块后添加SE Block;
+二是twose_resnet18，在每次卷积后都添加SE Block（效果并不好）
 '''
 
 
