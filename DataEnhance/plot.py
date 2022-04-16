@@ -11,12 +11,12 @@ img0 = img.convert("RGB")  # 原图
 img1 = transforms.RandomCrop(500, padding=125)(img0)  # 随机裁剪
 img2 = transforms.RandomHorizontalFlip(p=1)(img0)  # 水平翻转
 img3 = transforms.RandomVerticalFlip(p=1)(img0)  # 垂直翻转
-img4 = transforms.RandomRotation(degrees=180)(img0)  # 旋转180度
-img5 = transforms.ColorJitter(brightness=0, contrast=0.1, saturation=0.1, hue=0.1)(img0)  # 色调变化
+img4 = transforms.RandomRotation(degrees=90)(img0)  # 旋转180度
+img5 = transforms.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5)(img0)  # 色调变化
 
 a = np.array(img0)
 ToTensor = transforms.ToTensor()
-GaussianNoise = AddGaussianNoise(0., 1.)
+GaussianNoise = AddGaussianNoise(0., 0.75)
 img6 = ToTensor(a)
 img6 = GaussianNoise(img6)  # 高斯噪声
 img6 = np.transpose(img6.numpy(), (1, 2, 0))
@@ -54,4 +54,5 @@ show(axs, 1, 0, img4, "(e)随机旋转")
 show(axs, 1, 1, img5, "(f)色调变化")
 show(axs, 1, 2, img6, "(g)高斯噪声")
 show(axs, 1, 3, img7, "(h)椒盐噪声")
-
+plt.savefig('./DataEnhance.png', bbox_inches='tight', pad_inches=0, dpi=1024)
+plt.show()
