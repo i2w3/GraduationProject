@@ -22,23 +22,6 @@ def real_Time():
     return datetime.now().time().replace(microsecond=0)
 
 
-def seed_Setting(SEED):
-    """
-    根据SEED设置随机种子，增加PyTorch中模型的可复现性
-    :param SEED: 设置种子
-    :return:
-    """
-    if SEED:
-        np.random.seed(SEED)
-        torch.manual_seed(SEED)
-        torch.cuda.manual_seed(SEED)
-        torch.backends.cudnn.benchmark = False
-        torch.backends.cudnn.deterministic = True
-    # 不需要复现则启用cudnn的benchmark提高性能
-    else:
-        torch.backends.cudnn.benchmark = True
-
-
 def get_Accuracy(net, data_iter, device=None):
     # 计算模型在数据集上的精度
     if isinstance(net, nn.Module):
@@ -246,7 +229,7 @@ def full_Plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
 
     ax2 = ax.twinx()
     if np.max(valid_acc) < 0.90:
-        ax2.set(ylim=(0.30, 1.00))
+        ax2.set(ylim=(0.20, 1.00))
 
     l3 = ax2.plot(train_acc, color='blue', label="Train acc")
     l4 = ax2.plot(valid_acc, color='red', label="Valid acc")
@@ -403,3 +386,9 @@ def data_Save(model, train_losses, valid_losses, train_acces, valid_acces, unix_
     save_Npy(unix_timestamp, train_losses, valid_losses, train_acces, valid_acces)
     # 保存网络模型
     save_Model(unix_timestamp, model)
+
+
+def imshow(img):
+    img = img / 2 + 0.5
+    img = np.transpose(img.numpy(), (1, 2, 0))
+    plt.imshow(img)

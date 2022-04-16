@@ -16,35 +16,36 @@ def Lenet(channel=3, BN1=None, SE1=None, BN2=None, SE2=None, reduction=16):
     # Conv 1
     net.add_module("Conv1", (nn.Conv2d(channel, 6, 5, 1)))
     # in_channels=channel,out_channels=6,kernel_size=5,stride=1, padding=0
+
     if BN1:
-        net.add_module("Bn1", (nn.BatchNorm2d(6, momentum=0.9, eps=1e-5)))
-    net.add_module("Activation1", nn.Tanh())
+        net.add_module("BN1", (nn.BatchNorm2d(6)))
+    net.add_module("Activation1", nn.Sigmoid())
+
     if SE1:
         net.add_module("SE Block1", SEBlock(6, reduction=reduction))
-        print(f"SE1 Reduction={reduction}")
 
     # Pool 1
     net.add_module("Pool1", nn.AvgPool2d(kernel_size=2, stride=2))
 
     # Conv 2
     net.add_module("Conv2", (nn.Conv2d(6, 16, 5, 1)))
+
     if BN2:
         # 非残差网络要用SE Block最好再conv后加个BN
-        net.add_module("Bn2", (nn.BatchNorm2d(16, momentum=0.9, eps=1e-5)))
-    net.add_module("Activation2", nn.Tanh())
+        net.add_module("BN2", (nn.BatchNorm2d(16)))
+    net.add_module("Activation2", nn.Sigmoid())
     if SE2:
         net.add_module("SE Block2", SEBlock(16, reduction=reduction))
-        print(f"SE2 Reduction={reduction}")
 
     # Pool 2
     net.add_module("Pool2", nn.AvgPool2d(kernel_size=2, stride=2))
 
     # FC
     net.add_module("Flatten", nn.Flatten())
-    net.add_module("Linear1", nn.Linear(16 * 5 * 5, 120))
-    net.add_module("Activation3", nn.Tanh())
-    net.add_module("Linear2", nn.Linear(120, 84))
-    net.add_module("Activation4", nn.Tanh())
+    net.add_module("Linear1", nn.Sequential(nn.Linear(16 * 5 * 5, 120),
+                                            nn.Sigmoid()))
+    net.add_module("Linear2", nn.Sequential(nn.Linear(120, 84),
+                                            nn.Sigmoid()))
     net.add_module("Linear3", nn.Linear(84, 10))
 
     return net
@@ -61,7 +62,6 @@ def modern_Lenet(channel=3, BN1=None, SE1=None, BN2=None, SE2=None, reduction=16
     net.add_module("Activation1", nn.ReLU())
     if SE1:
         net.add_module("SE Block1", SEBlock(6, reduction=reduction))
-        print(f"SE1 Reduction={reduction}")
 
     # Pool 1
     net.add_module("Pool1", nn.MaxPool2d(kernel_size=2, stride=2))
@@ -74,17 +74,15 @@ def modern_Lenet(channel=3, BN1=None, SE1=None, BN2=None, SE2=None, reduction=16
     net.add_module("Activation2", nn.ReLU())
     if SE2:
         net.add_module("SE Block2", SEBlock(16, reduction=reduction))
-        print(f"SE2 Reduction={reduction}")
 
     # Pool 2
     net.add_module("Pool2", nn.MaxPool2d(kernel_size=2, stride=2))
 
     # FC
     net.add_module("Flatten", nn.Flatten())
-    net.add_module("Linear1", nn.Linear(16 * 5 * 5, 120))
-    net.add_module("Activation3", nn.ReLU())
-    net.add_module("Linear2", nn.Linear(120, 84))
-    net.add_module("Activation4", nn.ReLU())
+    net.add_module("Linear1", nn.Sequential(nn.Linear(16 * 5 * 5, 120),
+                                            nn.ReLU()))
+    net.add_module("Linear2", nn.Sequential(nn.Linear(120, 84),
+                                            nn.ReLU()))
     net.add_module("Linear3", nn.Linear(84, 10))
-
     return net
