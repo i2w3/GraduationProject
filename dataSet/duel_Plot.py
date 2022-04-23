@@ -12,17 +12,15 @@ def load_Npy(npy_path):
 
 
 def full_Plot():
-    size = 15
+    size = 18
 
-    (train_acc1, valid_acc1), (train_loss1, valid_loss1) = load_Npy(r"./无数据增强CIFAR10/1650641318/")
-
+    (train_acc1, valid_acc1), (train_loss1, valid_loss1) = load_Npy(r"./无数据增强MNIST/LeNet5/")
     train_loss1 = np.array(train_loss1)
     valid_loss1 = np.array(valid_loss1)
     train_acc1 = np.array(train_acc1)
     valid_acc1 = np.array(valid_acc1)
 
-    (train_acc2, valid_acc2), (train_loss2, valid_loss2) = load_Npy(r"./无数据增强CIFAR10/1650643962/")
-
+    (train_acc2, valid_acc2), (train_loss2, valid_loss2) = load_Npy(r"./无数据增强MNIST/ResNet18/")
     train_loss2 = np.array(train_loss2)
     valid_loss2 = np.array(valid_loss2)
     train_acc2 = np.array(train_acc2)
@@ -43,6 +41,7 @@ def full_Plot():
 
     l1 = ax[0].plot(train_loss1, '--', color='blue', label="Train loss")
     l2 = ax[0].plot(valid_loss1, '--', color='red', label="Valid loss")
+
     ax2 = ax[0].twinx()
     ax2.set(ylim=(acc_min, 1.00))
 
@@ -52,7 +51,7 @@ def full_Plot():
     lns = l1 + l2 + l3 + l4
     labs = [l.get_label() for l in lns]
     ax[0].legend(lns, labs, loc='upper left')
-    # plt.tick_params(labelsize=size)
+
     EPOCHS = np.array(valid_acc1).size
     if EPOCHS == 15:
         blink = 2
@@ -72,13 +71,11 @@ def full_Plot():
 
     tickl = [i + 1 for i in ticks]
     ax[0].set_xticks(ticks)
-    ax[0].set_xticklabels(tickl, rotation=10)
+    ax[0].set_xticklabels(tickl, rotation=10, fontsize=size - 5)
+    plt.tick_params(labelsize=size - 5)
 
-    # ax[0].set_title("Acc & Loss over Epochs", fontsize=size)
     ax[0].set_xlabel('Epoch', fontsize=size)
     ax[0].set_ylabel("Loss", fontsize=size)
-
-    # ax2.set_ylabel("Acc", fontsize=size)
 
     ax[0].grid(b=False, axis="y")
     ax2.grid(b=False, axis="y")
@@ -88,8 +85,7 @@ def full_Plot():
 
     l1 = ax[1].plot(train_loss2, '--', color='blue', label="Train loss")
     l2 = ax[1].plot(valid_loss2, '--', color='red', label="Valid loss")
-    # ax.set_ylable(labelsize=size)
-    # plt.tick_params(labelsize=size)
+
     ax2 = ax[1].twinx()
     ax2.set(ylim=(acc_min, 1.00))
 
@@ -99,7 +95,7 @@ def full_Plot():
     lns = l1 + l2 + l3 + l4
     labs = [l.get_label() for l in lns]
     ax[1].legend(lns, labs, loc='upper left')
-    # plt.tick_params(labelsize=size)
+
     EPOCHS = np.array(valid_acc2).size
     if EPOCHS == 15:
         blink = 2
@@ -121,11 +117,10 @@ def full_Plot():
 
     tickl = [i + 1 for i in ticks]
     ax[1].set_xticks(ticks)
-    ax[1].set_xticklabels(tickl, rotation=10)
+    ax[1].set_xticklabels(tickl, rotation=10, fontsize=size - 5)
+    plt.tick_params(labelsize=size - 5)
 
-    # ax[0].set_title("Acc & Loss over Epochs", fontsize=size)
     ax[1].set_xlabel('Epoch', fontsize=size)
-    # ax[1].set_ylabel("Loss", fontsize=size)
 
     ax2.set_ylabel("Acc", fontsize=size)
 
@@ -133,7 +128,7 @@ def full_Plot():
     ax2.grid(b=False, axis="y")
     ax[1].grid(b=True, axis="x")
 
-    Path = r"./无数据增强CIFAR10"
+    Path = r"./无数据增强MNIST"
     fig.savefig(Path + "/" + "无数据增强.png", bbox_inches='tight', pad_inches=0)
     fig.show()
     plt.style.use('default')

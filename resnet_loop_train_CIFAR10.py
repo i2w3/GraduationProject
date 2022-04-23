@@ -6,7 +6,7 @@ from torchsummary import summary
 
 from model.ResNet import resnet18
 from model.SE_ResNet import se_resnet18
-from dataSet import load_MNIST, load_CIFAR10
+from dataSet import CIFAR10_Dataloader
 from utils import check_Device, real_Time, get_LearningRate, get_Accuracy, time_Stamp, top_Err, data_Save
 
 # 检查cuda
@@ -23,12 +23,12 @@ torch.backends.cudnn.deterministic = True
 # 参数设置
 LEARNING_RATE = 0.1
 BATCH_SIZE = 128
-EPOCHS = 160
+EPOCHS = 80
 PRINT_EVERY = 1
 MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 
 # 数据设置
-train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, Normalize=True, Random=True, Noise=None)
+train_loader, valid_loader, channel = CIFAR10_Dataloader(batch_size=BATCH_SIZE, Augment=True)
 
 for net in [resnet18(), se_resnet18()]:
     model = net.to(device)
