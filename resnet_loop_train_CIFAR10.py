@@ -25,6 +25,7 @@ LEARNING_RATE = 0.1
 BATCH_SIZE = 128
 EPOCHS = 160
 PRINT_EVERY = 1
+MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 
 # 数据设置
 train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, Normalize=True, Random=True, Noise=None)
@@ -40,8 +41,7 @@ for net in [resnet18(), se_resnet18()]:
     # optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
     # optimizer = optim.SGDM(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
 
-    milestones = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=MILESTONES, gamma=0.1)
 
     unix_timestamp = str(time_Stamp())
 
@@ -133,4 +133,3 @@ gamma=0.1
 epochs=160
 lr=0.1
 '''
-

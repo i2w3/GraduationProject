@@ -5,6 +5,9 @@ import torch
 import zipfile
 import numpy as np
 import torch.nn as nn
+import random
+import numpy as np
+from PIL import Image
 from d2l import torch as d2l
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -222,7 +225,7 @@ def full_Plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
     train_acc = np.array(train_acc)
     valid_acc = np.array(valid_acc)
 
-    fig, ax = plt.subplots(figsize=(9, 5), tight_layout=True)  # 创建一个包含一个axes的figure
+    fig, ax = plt.subplots(figsize=(7, 5), tight_layout=True)  # 创建一个包含一个axes的figure
 
     l1 = ax.plot(train_loss, '--', color='blue', label="Train loss")
     l2 = ax.plot(valid_loss, '--', color='red', label="Valid loss")
@@ -251,9 +254,11 @@ def full_Plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
         blink = 18
     ticks = list(range(0, EPOCHS, blink))
     if EPOCHS == 15 or EPOCHS == 50 or EPOCHS == 100:
-        ticks.append(EPOCHS - 1)
+        pass
     else:
         ticks[-1] = EPOCHS
+
+    print(ticks)
 
     tickl = [i + 1 for i in ticks]
     ax.set_xticks(ticks)
@@ -270,7 +275,7 @@ def full_Plot(train_loss, valid_loss, train_acc, valid_acc, unix_timestamp, save
     Path = savePath + str(unix_timestamp)
     if not os.path.exists(Path):
         os.makedirs(Path)
-    fig.savefig(Path + "/" + "fig.png")
+    fig.savefig(Path + "/" + "fig.png", bbox_inches='tight', pad_inches=0)
     fig.show()
     plt.style.use('default')
 
@@ -392,3 +397,33 @@ def imshow(img):
     img = img / 2 + 0.5
     img = np.transpose(img.numpy(), (1, 2, 0))
     plt.imshow(img)
+
+
+class AddGaussianNoise(object):
+    def __init__(self, mean=0., std=1.):
+        self.std = std
+        self.mean = mean
+
+    def __call__(self, tensor):
+        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+
+
+class AddSaltPepperNoise(object):
+
+    def __init__(self, density=0):
+        self.density = density
+
+    def __call__(self, img):
+        img = np.array(img)  # 图片转numpy
+        h, w, c = img.shape
+        Nd = self.density
+        Sd = 1 - Nd
+        mask = np.random.choice((0, 1, 2), size=(h, w, 1), p=[Nd / 2.0, Nd / 2.0, Sd])  # 生成一个通道的mask
+        mask = np.repeat(mask, c, axis=2)  # 在通道的维度复制，生成彩色的mask
+        img[mask == 0] = 0  # 椒
+        img[mask == 1] = 255  # 盐
+        img = Image.fromarray(img.astype('uint8')).convert('RGB')  # numpy转图片
+        return img

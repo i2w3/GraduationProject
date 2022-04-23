@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchsummary import summary
 
-from model.LeNet import Lenet, modern_Lenet
+from model.LeNet import LeNet5, modern_LeNet5
 from dataSet import load_MNIST, load_CIFAR10
 from utils import check_Device, real_Time, get_LearningRate, get_Accuracy, time_Stamp, top_Err, data_Save
 
@@ -24,25 +24,28 @@ LEARNING_RATE = 0.1
 BATCH_SIZE = 128
 EPOCHS = 100
 PRINT_EVERY = 1
+MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 
 # 数据设置
 train_loader, valid_loader, channel = load_CIFAR10(BATCH_SIZE, Normalize=True, Random=True, Noise=None)
 
-classic_Model = [Lenet(),  # 使用AvgPool池化和Tanh激活的经典LeNet5
-                 Lenet(SE2=True),  # 在第二个卷积层后添加SE Block
-                 Lenet(BN2=True),  # 在第二个卷积层后添加BatchNorm
-                 Lenet(BN2=True, SE2=True),  # 在第二个卷积层后添加BatchNorm、SE Block
-                 Lenet(BN1=True, SE1=True)]  # 在第一个卷积层后添加BatchNorm、SE Block
 
-modern_Model = [modern_Lenet(),  # 使用MaxPool池化和Relu激活的LeNet5
-                modern_Lenet(SE2=True),  # 在第二个卷积层后添加SE Block
-                modern_Lenet(BN2=True),  # 在第二个卷积层后添加BatchNorm
-                modern_Lenet(BN2=True, SE2=True),
-                modern_Lenet(BN1=True, SE1=True)]
+classic_Model = [LeNet5(),  # 使用AvgPool池化和Tanh激活的经典LeNet5
+                 LeNet5(SE2=True),  # 在第二个卷积层后添加SE Block
+                 LeNet5(BN2=True),  # 在第二个卷积层后添加BatchNorm
+                 LeNet5(BN2=True, SE2=True),  # 在第二个卷积层后添加BatchNorm、SE Block
+                 LeNet5(BN1=True, SE1=True),  # 在第一个卷积层后添加BatchNorm、SE Block
+                 LeNet5(BN1=True, BN2=True),  # 在两个卷积层后都添加BatchNorm
+                 LeNet5(BN1=True, BN2=True, SE2=True),
+                 LeNet5(BN1=True, SE1=True, BN2=True),
+                 LeNet5(BN1=True, SE1=True, BN2=True, SE2=True)]
 
-#for net in classic_Model + modern_Model:
-    #pass
-for net in [Lenet(BN2=True, SE2=True), modern_Lenet(BN2=True, SE2=True)]:
+modern_Model = [modern_LeNet5(BN1=True, BN2=True),
+                modern_LeNet5(BN1=True, BN2=True, SE2=True),
+                modern_LeNet5(BN1=True, SE1=True, BN2=True),
+                modern_LeNet5(BN1=True, SE1=True, BN2=True, SE2=True)]
+
+for net in classic_Model + modern_Model:
     model = net.to(device)
     summary(model, (channel, 32, 32))
     params = sum(p.numel() for p in list(model.parameters())) / 1e6
@@ -53,8 +56,7 @@ for net in [Lenet(BN2=True, SE2=True), modern_Lenet(BN2=True, SE2=True)]:
     # optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
     # optimizer = optim.SGDM(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
 
-    milestones = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=0.1)
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=MILESTONES, gamma=0.1)
 
     unix_timestamp = str(time_Stamp())
 
