@@ -1,8 +1,16 @@
 
 __pycache__
+/model/__pycache__
 .idea
-png
 .ipynb_checkpoints
-data/cifar-100-python/train
-data/cifar-100-python/meta
-data/cifar-100-python/test
+
+png
+dataSet/cifar-100-python
+dataSet/cifar-10-batches-py
+dataSet/MNIST
+dataSet/png
+dataSet/乱
+dataSet/无数据增强CIFAR10
+dataSet/无数据增强MNIST
+dataSet/有数据增强CIFAR10
+
