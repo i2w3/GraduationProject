@@ -14,13 +14,13 @@ def load_Npy(npy_path):
 def full_Plot():
     size = 18
 
-    (train_acc1, valid_acc1), (train_loss1, valid_loss1) = load_Npy(r"./无数据增强MNIST/LeNet5/")
+    (train_acc1, valid_acc1), (train_loss1, valid_loss1) = load_Npy(r"./无数据增强CIFAR10/LeNet5/")
     train_loss1 = np.array(train_loss1)
     valid_loss1 = np.array(valid_loss1)
     train_acc1 = np.array(train_acc1)
     valid_acc1 = np.array(valid_acc1)
 
-    (train_acc2, valid_acc2), (train_loss2, valid_loss2) = load_Npy(r"./无数据增强MNIST/ResNet18/")
+    (train_acc2, valid_acc2), (train_loss2, valid_loss2) = load_Npy(r"./无数据增强CIFAR10/ResNet18/")
     train_loss2 = np.array(train_loss2)
     valid_loss2 = np.array(valid_loss2)
     train_acc2 = np.array(train_acc2)
@@ -128,7 +128,7 @@ def full_Plot():
     ax2.grid(b=False, axis="y")
     ax[1].grid(b=True, axis="x")
 
-    Path = r"./无数据增强MNIST"
+    Path = r"./无数据增强CIFAR10"
     fig.savefig(Path + "/" + "无数据增强.png", bbox_inches='tight', pad_inches=0)
     fig.show()
     plt.style.use('default')

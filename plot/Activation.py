@@ -2,9 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# 函数
-
-
+'''
 start = -10  # 输入需要绘制的起始值（从左到右）
 stop = 10  # 输入需要绘制的终点值
 step = 0.02  # 输入步长
@@ -35,6 +33,34 @@ x = np.linspace(start, stop, int(num))
 y = g(x)
 ax2.plot(x, y, label='Relu')
 
+plt.grid(True)  # 显示网格
+
+plt.legend()  # 显示旁注#注意：不会显示后来再定义的旁注
+plt.savefig("./" + "Activation.png", bbox_inches='tight', pad_inches=0)
+
+plt.show()
+
+'''
+start = -10  # 输入需要绘制的起始值（从左到右）
+stop = 10  # 输入需要绘制的终点值
+step = 0.02  # 输入步长
+fig = plt.figure(figsize=(10, 5))
+
+ax1 = plt.subplot(1, 2, 1)
+num = (stop - start) / step  # 计算点的个数
+g = lambda z: (np.exp(-z)) / ((1 + np.exp(-z)) * (1 + np.exp(-z)))
+x = np.linspace(start, stop, int(num))
+y = g(x)
+l1 = ax1.plot(x, y, label="Sigmoid'")
+plt.legend()
+plt.grid(True)  # 显示网格
+
+ax2 = plt.subplot(1, 2, 2)
+#g = lambda z: 1 - ((np.exp(z) - np.exp(-z)) * (np.exp(z) - np.exp(-z))) / ((np.exp(z) + np.exp(-z)) * (np.exp(z) + np.exp(-z)))
+g = lambda z:4 / ((np.exp(z) + np.exp(-z)) * (np.exp(z) + np.exp(-z)))
+x = np.linspace(start, stop, int(num))
+y = g(x)
+l2 = ax2.plot(x, y, label="Tanh'")
 plt.grid(True)  # 显示网格
 
 plt.legend()  # 显示旁注#注意：不会显示后来再定义的旁注

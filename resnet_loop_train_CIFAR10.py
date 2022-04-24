@@ -23,7 +23,7 @@ torch.backends.cudnn.deterministic = True
 # 参数设置
 LEARNING_RATE = 0.1
 BATCH_SIZE = 128
-EPOCHS = 80
+EPOCHS = 100
 PRINT_EVERY = 1
 MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 
@@ -37,9 +37,9 @@ for net in [resnet18(), se_resnet18()]:
     print('#Params: %.1fM' % params)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
-    # optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
-    # optimizer = optim.SGDM(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
+    optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE)
+    # optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9)
+    # optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
 
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=MILESTONES, gamma=0.1)
 
