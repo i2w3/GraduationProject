@@ -6,7 +6,7 @@ from torchsummary import summary
 
 from model.ResNet import resnet18
 from model.SE_ResNet import se_resnet18
-from dataSet import load_MNIST, load_CIFAR10
+from dataSet import MNSIT_Dataloader
 from utils import check_Device, real_Time, get_LearningRate, get_Accuracy, time_Stamp, top_Err, data_Save
 
 # 检查cuda
@@ -21,16 +21,16 @@ torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
 
 # 参数设置
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.01
 BATCH_SIZE = 128
 EPOCHS = 15
 PRINT_EVERY = 1
-# MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 
 # 数据设置
-train_loader, valid_loader, channel = load_MNIST(BATCH_SIZE, Resize=32, Normalize=True, Random=True, Noise=None)
+train_loader, valid_loader, channel = MNSIT_Dataloader(batch_size=BATCH_SIZE, Augment=True)
 
-for net in [resnet18(), se_resnet18()]:
+for net in [se_resnet18(), resnet18()]:
+    # 将第一个卷积层的输入通道数改为channel
     net.conv1 = nn.Conv2d(channel, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     model = net.to(device)
     summary(model, (channel, 224, 224))
@@ -39,10 +39,6 @@ for net in [resnet18(), se_resnet18()]:
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
-    # optimizer = optim.Adam(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
-    # optimizer = optim.SGDM(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
-
-    # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=MILESTONES, gamma=0.1)
 
     unix_timestamp = str(time_Stamp())
 
@@ -112,13 +108,6 @@ for net in [resnet18(), se_resnet18()]:
                   f'Valid accuracy: {100 * valid_acc:.2f}')
             train_acces.append(train_acc)
             valid_acces.append(valid_acc)
-
-            old_lr = get_LearningRate(optimizer)
-            # scheduler.step()
-            new_lr = get_LearningRate(optimizer)
-            if old_lr != new_lr:
-                print(f'\t\t\t\t\t\t'
-                      f'Learning Rate from {old_lr:.3f} to {new_lr:.3f}')
 
     # 循环训练结束，计算top1err和top5err，根据时间戳保存数据并绘图
 

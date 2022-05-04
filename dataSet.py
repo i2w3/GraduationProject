@@ -21,6 +21,31 @@ def transform_Augment(Augment):
     return transform
 
 
+def download_MNIST(DownloadRoot, Augment):
+    transform_test = transforms.Compose([transforms.ToTensor(),
+                                         transforms.Normalize([0.1307, ], [0.3081, ]),
+                                         transforms.Resize(32)
+                                         ])
+
+    if Augment:
+        transform_train = transform_Augment('MNIST')
+    else:
+        transform_train = transform_test
+
+    MNIST_train = datasets.MNIST(root=DownloadRoot,  # 数据保存路径
+                                 train=True,  # 作为训练集
+                                 download=True,  # 是否下载该数据集
+                                 transform=transform_train
+                                 )
+
+    MNIST_test = datasets.MNIST(root=DownloadRoot,  # 数据保存路径
+                                train=False,  # 作为测试集
+                                download=True,  # 是否下载该数据集
+                                transform=transform_test
+                                )
+    return MNIST_train, MNIST_test
+
+
 def download_CIFAR10(DownloadRoot, Augment):
     transform_test = transforms.Compose([transforms.ToTensor(),
                                          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
@@ -62,3 +87,22 @@ def CIFAR10_Dataloader(batch_size, Augment=True, DownloadRoot=r".\dataSet"):
     test_loader = DataLoader(CIFAR10_test, batch_size=test_batch_size, shuffle=False)
 
     return train_loader, test_loader, 3
+
+
+def MNSIT_Dataloader(batch_size, Augment=True, DownloadRoot=r".\dataSet"):
+    MNIST_train, MNSIT_test = download_MNIST(DownloadRoot, Augment)
+
+    if batch_size == 'BGD':
+        train_batch_size = MNIST_train.data.shape[0]  # 50000
+        test_batch_size = MNSIT_test.data.shape[0]  # 10000
+    elif batch_size == 'SGD':
+        train_batch_size = 1
+        test_batch_size = 1
+    else:
+        train_batch_size = batch_size
+        test_batch_size = batch_size
+
+    train_loader = DataLoader(MNIST_train, batch_size=train_batch_size, shuffle=False)
+    test_loader = DataLoader(MNSIT_test, batch_size=test_batch_size, shuffle=False)
+
+    return train_loader, test_loader, 1

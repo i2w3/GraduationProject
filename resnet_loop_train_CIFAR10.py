@@ -30,7 +30,7 @@ MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 # 数据设置
 train_loader, valid_loader, channel = CIFAR10_Dataloader(batch_size=BATCH_SIZE, Augment=True)
 
-for net in [resnet18(), se_resnet18()]:
+for net in [se_resnet18(), resnet18()]:
     model = net.to(device)
     summary(model, (channel, 224, 224))
     params = sum(p.numel() for p in list(model.parameters())) / 1e6
