@@ -15,9 +15,8 @@ class example(nn.Module):
         return x
 
 
-datas = torch.tensor([[1, 2, 3], [4, 5, 6]], dtype=torch.float)
-datas = datas.cuda()
+data = torch.tensor([[1, 2, 3], [4, 5, 6]], dtype=torch.float)
+data = data.cuda()
 net = example().cuda()
-#  summary(net.cuda(),(3,))
-out = net(datas)
+out = net(data)
 print(out)

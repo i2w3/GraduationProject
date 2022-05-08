@@ -29,7 +29,7 @@ MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
 # 数据设置
 train_loader, valid_loader, channel = CIFAR10_Dataloader(batch_size=BATCH_SIZE, Augment=True)
 
-"""
+
 classic_Model = [LeNet5(),  # 使用AvgPool池化和Tanh激活的经典LeNet5
                  LeNet5(SE2=True),  # 在第二个卷积层后添加SE Block
                  LeNet5(BN2=True),  # 在第二个卷积层后添加BatchNorm
@@ -42,17 +42,13 @@ classic_Model = [LeNet5(),  # 使用AvgPool池化和Tanh激活的经典LeNet5
                  LeNet5(BN1=True, BN2=True, SE2=True),
                  LeNet5(BN1=True, SE1=True, BN2=True)
                  ]
-"""
-'''
-
 
 modern_Model = [modern_LeNet5(BN1=True, BN2=True),
                 modern_LeNet5(BN1=True, BN2=True, SE2=True),
                 modern_LeNet5(BN1=True, SE1=True, BN2=True),
                 modern_LeNet5(BN1=True, SE1=True, BN2=True, SE2=True)]
-'''
-net = modern_LeNet5(BN1=True, BN2=True, SE2=True)
-for optimizer in [optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9)]:
+
+for net in classic_Model + modern_Model:
     model = net.to(device)
     summary(model, (channel, 32, 32))
     params = sum(p.numel() for p in list(model.parameters())) / 1e6
@@ -61,7 +57,7 @@ for optimizer in [optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9)]:
     criterion = nn.CrossEntropyLoss()
     # optimizer = net.parameters(), lr=LEARNING_RATE)
     # optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9)
-    # optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
+    optimizer = optim.SGD(net.parameters(), lr=LEARNING_RATE, momentum=0.9, weight_decay=1e-4)
 
 
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=MILESTONES, gamma=0.1)

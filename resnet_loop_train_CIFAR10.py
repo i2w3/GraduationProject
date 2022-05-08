@@ -4,8 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchsummary import summary
 
-from model.ResNet import resnet18
-from model.SE_ResNet import se_resnet18
+from model.ResNet import resnet18, se_resnet18
 from dataSet import CIFAR10_Dataloader
 from utils import check_Device, real_Time, get_LearningRate, get_Accuracy, time_Stamp, top_Err, data_Save
 

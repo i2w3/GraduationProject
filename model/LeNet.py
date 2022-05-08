@@ -1,7 +1,7 @@
 import torch.nn as nn
-from utils import check_Device
 from torchsummary import summary
-from model.SE_ResNet import SEBlock
+from utils import check_Device
+from model.SEAttention import SEBlock
 
 
 def LeNet5(channel=3, BN1=None, SE1=None, BN2=None, SE2=None, reduction=16):
