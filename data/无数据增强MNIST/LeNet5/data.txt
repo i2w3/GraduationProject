@@ -1,0 +1,44 @@
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1            [-1, 6, 28, 28]             156
+              Tanh-2            [-1, 6, 28, 28]               0
+         AvgPool2d-3            [-1, 6, 14, 14]               0
+            Conv2d-4           [-1, 16, 10, 10]           2,416
+              Tanh-5           [-1, 16, 10, 10]               0
+         AvgPool2d-6             [-1, 16, 5, 5]               0
+           Flatten-7                  [-1, 400]               0
+            Linear-8                  [-1, 120]          48,120
+              Tanh-9                  [-1, 120]               0
+           Linear-10                   [-1, 84]          10,164
+             Tanh-11                   [-1, 84]               0
+           Linear-12                   [-1, 10]             850
+================================================================
+Total params: 61,706
+Trainable params: 61,706
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.11
+Params size (MB): 0.24
+Estimated Total Size (MB): 0.35
+----------------------------------------------------------------
+#Params: 0.1M
+18:21:58 --- Start training loop	training on: cuda
+18:22:25 --- Epoch: 1	Train loss: 0.2616	Valid loss: 0.0935	Train accuracy: 97.06	Valid accuracy: 97.12
+18:22:52 --- Epoch: 2	Train loss: 0.0778	Valid loss: 0.0821	Train accuracy: 97.65	Valid accuracy: 97.17
+18:23:19 --- Epoch: 3	Train loss: 0.0523	Valid loss: 0.0576	Train accuracy: 98.60	Valid accuracy: 98.07
+18:23:45 --- Epoch: 4	Train loss: 0.0380	Valid loss: 0.0615	Train accuracy: 98.55	Valid accuracy: 98.03
+18:24:13 --- Epoch: 5	Train loss: 0.0282	Valid loss: 0.0534	Train accuracy: 98.86	Valid accuracy: 98.45
+18:24:39 --- Epoch: 6	Train loss: 0.0242	Valid loss: 0.0565	Train accuracy: 98.94	Valid accuracy: 98.26
+18:25:06 --- Epoch: 7	Train loss: 0.0196	Valid loss: 0.0475	Train accuracy: 99.20	Valid accuracy: 98.54
+18:25:32 --- Epoch: 8	Train loss: 0.0184	Valid loss: 0.0454	Train accuracy: 99.34	Valid accuracy: 98.55
+18:25:59 --- Epoch: 9	Train loss: 0.0171	Valid loss: 0.0449	Train accuracy: 99.39	Valid accuracy: 98.66
+18:26:26 --- Epoch: 10	Train loss: 0.0138	Valid loss: 0.0454	Train accuracy: 99.41	Valid accuracy: 98.55
+18:26:53 --- Epoch: 11	Train loss: 0.0124	Valid loss: 0.0437	Train accuracy: 99.45	Valid accuracy: 98.55
+18:27:20 --- Epoch: 12	Train loss: 0.0127	Valid loss: 0.0469	Train accuracy: 99.49	Valid accuracy: 98.53
+18:27:47 --- Epoch: 13	Train loss: 0.0114	Valid loss: 0.0517	Train accuracy: 99.29	Valid accuracy: 98.41
+18:28:14 --- Epoch: 14	Train loss: 0.0106	Valid loss: 0.0514	Train accuracy: 99.45	Valid accuracy: 98.52
+18:28:41 --- Epoch: 15	Train loss: 0.0098	Valid loss: 0.0547	Train accuracy: 99.19	Valid accuracy: 98.37
+18:28:43 --- Time Stamp: 1650622918	top1 error: 0.0163	top5 error: 0.0000
+[0, 2, 4, 6, 8, 10, 12, 14]

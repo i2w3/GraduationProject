@@ -8,6 +8,8 @@ class SEBlock(nn.Module):
 
         # 全局平均池化，输入B*C*H*W -> 输出 B*C*1*1
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
+
+        # 两个全连接层，输入B*C*1*1 -> B*(C/r)*1*1 -> B*C*1*1，带来更多的非线性，更好地拟合通道相关性
         self.fc = nn.Sequential(
             nn.Linear(channel, channel // reduction, bias=False),
             nn.ReLU(inplace=True),
@@ -21,7 +23,7 @@ class SEBlock(nn.Module):
         # B*C*1*1转成B*C，再送入FC层
         y = self.avg_pool(x).view(bs, c)
 
-        # 全连接层+池化
+        # 两个全连接层+激活
         y = self.fc(y).view(bs, c, 1, 1)
 
         # 和原特征图相乘

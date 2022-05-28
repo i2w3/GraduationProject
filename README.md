@@ -1,10 +1,10 @@
 # GraduationProject
 
-## 文件结构
+## 程序目录
 ```tree
 ./
 │  README.md
-│  dataSet.py                       # 用来下载MNSIT、CIFAR-10、CIFAR-100数据集，并生成dataloader
+│  dataSet.py                       # 用来下载MNSIT、CIFAR-10数据集，并生成dataloader
 │  lenet_loop_train_MNIST.py        # LeNet5 分类 MNIST
 │  lenet_loop_train_CIFAR10.py      # LeNet5 分类 CIFAR-10
 │  resnet_loop_train_MNIST.py       # ResNet18 分类 MNIST
@@ -33,6 +33,13 @@
 ## 训练代码说明
 主要的训练代码在xxx_loop_train_yyy.py中，基本流程如下
 ```python
+# 超参数设置
+LEARNING_RATE = 0.1
+BATCH_SIZE = 128
+EPOCHS = 100
+PRINT_EVERY = 1
+MILESTONES = list(map(int, [EPOCHS * 0.5, EPOCHS * 0.75]))
+
 # 读取数据集
 train_loader, valid_loader, channel = yyy_Dataloader(batch_size=BATCH_SIZE, Augment=True)
 
